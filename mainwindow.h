@@ -1,3 +1,6 @@
+#ifndef _MAIN_WINDOW_H_
+#define _MAIN_WINDOW_H_
+
 #include <QMainWindow>
 
 namespace Ui {
@@ -16,3 +19,5 @@ private:
     Ui::MainWindow *ui;
 
 };
+
+#endif //_MAIN_WINDOW_H_

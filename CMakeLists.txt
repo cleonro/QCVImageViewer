@@ -30,6 +30,7 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 set(SRCS 
 		main.cpp 
 		mainwindow.h mainwindow.cpp
+		viewport.h viewport.cpp
 	)
 set(HDRS )
 set(FRMS 
