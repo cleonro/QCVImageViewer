@@ -36,10 +36,12 @@ set(SRCS
 		main.cpp 
 		mainwindow.h mainwindow.cpp
 		viewport.h viewport.cpp
+		imagecontrols.h imagecontrols.cpp
 	)
 set(HDRS )
 set(FRMS 
 	mainwindow.ui
+	imagecontrols.ui
 	)
 qt5_wrap_ui(FRMS_SRCS ${FRMS})
 qt5_wrap_cpp(MOC_SRCS ${HDRS})

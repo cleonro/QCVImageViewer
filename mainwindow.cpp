@@ -1,9 +1,11 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "viewport.h"
+#include "imagecontrols.h"
 
 #include <QFileDialog>
 #include <QDir>
+#include <QDockWidget>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -17,6 +19,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     m_viewPort = new ViewPort(this);
     this->setCentralWidget(m_viewPort);
+
+    addControlWidgets();
 }
 
 MainWindow::~MainWindow()
@@ -31,4 +35,18 @@ void MainWindow::onOpenActionTriggered()
     {
         m_viewPort->openImageFile(imageFileName);
     }
+}
+
+void MainWindow::addControlWidgets()
+{
+    QDockWidget* dock = new QDockWidget(tr("Image Controls"), this);
+    ImageControls* controls = new ImageControls(this);
+    controls->setImageViewPort(m_viewPort);
+    dock->setWidget(controls);
+
+    this->addDockWidget(Qt::LeftDockWidgetArea, dock);
+    dock->setFloating(false);
+    dock->hide();
+
+    ui->menuWindow->addAction(dock->toggleViewAction());
 }

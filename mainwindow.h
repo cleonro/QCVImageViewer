@@ -21,6 +21,9 @@ private slots:
     void onOpenActionTriggered();
 
 private:
+    void addControlWidgets();
+
+private:
     Ui::MainWindow *ui;
 
     ViewPort*   m_viewPort;
