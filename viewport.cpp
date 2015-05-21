@@ -161,18 +161,20 @@ bool ViewPort::applyBrightnessContrast()
 {
     m_cvImage = cv::Mat::zeros( m_cvOrigImage.size(), m_cvOrigImage.type() );
 
-    for( int y = 0; y < m_cvOrigImage.rows; y++ )
-    {
-        for( int x = 0; x < m_cvOrigImage.cols; x++ )
-        {
-            for( int c = 0; c < 3; c++ )
-            {
-                m_cvImage.at<cv::Vec3b>(y,x)[c] = cv::saturate_cast<uchar>(
-                                                    m_contrast * ( m_cvOrigImage.at<cv::Vec3b>(y,x)[c] ) + m_brightness
-                                                    );
-            }
-        }
-    }
+//    for( int y = 0; y < m_cvOrigImage.rows; y++ )
+//    {
+//        for( int x = 0; x < m_cvOrigImage.cols; x++ )
+//        {
+//            for( int c = 0; c < 3; c++ )
+//            {
+//                m_cvImage.at<cv::Vec3b>(y,x)[c] = cv::saturate_cast<uchar>(
+//                                                    m_contrast * ( m_cvOrigImage.at<cv::Vec3b>(y,x)[c] ) + m_brightness
+//                                                    );
+//            }
+//        }
+//    }
+
+    m_cvOrigImage.convertTo(m_cvImage, -1, m_contrast, m_brightness);
 
     return openImage();
 }
