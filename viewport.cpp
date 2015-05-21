@@ -62,6 +62,11 @@ void ViewPort::renderImage()
 
 void ViewPort::resizeImage(int width, int height)
 {
+    if(m_renderImage.isNull())
+    {
+        return;
+    }
+
     m_resizedWidth = width;
     m_resizedHeight = width / m_imageRatio;
     if(m_resizedHeight > height)
