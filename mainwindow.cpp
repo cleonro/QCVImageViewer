@@ -6,6 +6,7 @@
 #include <QFileDialog>
 #include <QDir>
 #include <QDockWidget>
+#include <QFile>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -21,6 +22,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->setCentralWidget(m_viewPort);
 
     addControlWidgets();
+    setWindowTitle("QCVImageViewer");
 }
 
 MainWindow::~MainWindow()
@@ -33,7 +35,12 @@ void MainWindow::onOpenActionTriggered()
     QString imageFileName = QFileDialog::getOpenFileName(this, tr("Open Image File"), QDir::currentPath(), tr("Images (*.png *.xpm *.jpg)"));
     if(!imageFileName.isEmpty())
     {
-        m_viewPort->openImageFile(imageFileName);
+        bool fileOpened = m_viewPort->openImageFile(imageFileName);
+        if(fileOpened)
+        {
+            QString windowTitle = QFile(imageFileName).fileName();
+            setWindowTitle(windowTitle);
+        }
     }
 }
 

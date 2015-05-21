@@ -9,6 +9,9 @@ ViewPort::ViewPort(QWidget *parent)  :
     m_imageRatio = 4.0f / 3.0f;
     m_positionX = 0;
     m_positionY = 0;
+
+    m_brightness = 0;
+    m_contrast = 1.0;
 }
 
 ViewPort::~ViewPort()
@@ -95,7 +98,18 @@ void ViewPort::resizeImage(int width, int height)
 
 bool ViewPort::openImageFile(const QString &fileName)
 {
-    m_cvImage = cv::imread(fileName.toStdString());
+    m_cvOrigImage = cv::imread(fileName.toStdString());
+    bool imageOpened = applyBrightnessContrast();
+    if(imageOpened)
+    {
+        this->update();
+    }
+    emit resetControls();
+    return imageOpened;
+}
+
+bool ViewPort::openImage()
+{
     m_imageRatio = float(m_cvImage.cols) / float(m_cvImage.rows);
 
     int channels = m_cvImage.channels();
@@ -124,5 +138,41 @@ bool ViewPort::openImageFile(const QString &fileName)
     int h = this->height();
     resizeImage(w, h);
 
+    return true;
+}
+
+bool ViewPort::changeBrightnessContrast(int brightness, float contrast)
+{
+    if(m_renderImage.isNull())
+    {
+        return false;
+    }
+
+    m_brightness = brightness;
+    m_contrast = contrast;
+
+    applyBrightnessContrast();
     this->update();
+
+    return true;
+}
+
+bool ViewPort::applyBrightnessContrast()
+{
+    m_cvImage = cv::Mat::zeros( m_cvOrigImage.size(), m_cvOrigImage.type() );
+
+    for( int y = 0; y < m_cvOrigImage.rows; y++ )
+    {
+        for( int x = 0; x < m_cvOrigImage.cols; x++ )
+        {
+            for( int c = 0; c < 3; c++ )
+            {
+                m_cvImage.at<cv::Vec3b>(y,x)[c] = cv::saturate_cast<uchar>(
+                                                    m_contrast * ( m_cvOrigImage.at<cv::Vec3b>(y,x)[c] ) + m_brightness
+                                                    );
+            }
+        }
+    }
+
+    return openImage();
 }
