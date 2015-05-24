@@ -6,7 +6,7 @@
 #include <QFileDialog>
 #include <QDir>
 #include <QDockWidget>
-#include <QFile>
+#include <QFileInfo>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -38,7 +38,7 @@ void MainWindow::onOpenActionTriggered()
         bool fileOpened = m_viewPort->openImageFile(imageFileName);
         if(fileOpened)
         {
-            QString windowTitle = QFile(imageFileName).fileName();
+            QString windowTitle = QFileInfo(imageFileName).fileName();
             setWindowTitle(windowTitle);
         }
     }
