@@ -8,6 +8,7 @@ class MainWindow;
 }
 
 class ViewPort;
+class QFileDialog;
 
 class MainWindow : public QMainWindow
 {
@@ -26,7 +27,8 @@ private:
 private:
     Ui::MainWindow *ui;
 
-    ViewPort*   m_viewPort;
+    ViewPort*       m_viewPort;
+    QFileDialog     *m_fileDialog;
 };
 
 #endif //_MAIN_WINDOW_H_

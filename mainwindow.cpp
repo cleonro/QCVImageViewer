@@ -23,6 +23,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
     addControlWidgets();
     setWindowTitle("QCVImageViewer");
+
+    m_fileDialog = new QFileDialog(this, Qt::Dialog);
+    m_fileDialog->setFileMode(QFileDialog::ExistingFile);
+    m_fileDialog->setNameFilter(tr("Images (*.png *.xpm *.jpg)"));
+    m_fileDialog->setWindowTitle(tr("Open Image File"));
 }
 
 MainWindow::~MainWindow()
@@ -32,7 +37,11 @@ MainWindow::~MainWindow()
 
 void MainWindow::onOpenActionTriggered()
 {
-    QString imageFileName = QFileDialog::getOpenFileName(this, tr("Open Image File"), QDir::currentPath(), tr("Images (*.png *.xpm *.jpg)"));
+    QString imageFileName;// = QFileDialog::getOpenFileName(this, tr("Open Image File"), QDir::currentPath(), tr("Images (*.png *.xpm *.jpg)"));
+    if(m_fileDialog->exec())
+    {
+        imageFileName = m_fileDialog->selectedFiles().first();
+    }
     if(!imageFileName.isEmpty())
     {
         bool fileOpened = m_viewPort->openImageFile(imageFileName);

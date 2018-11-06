@@ -98,7 +98,30 @@ void ViewPort::resizeImage(int width, int height)
 
 bool ViewPort::openImageFile(const QString &fileName)
 {
+    //test-remove
+    static cv::VideoCapture cam = cv::VideoCapture(0);
+    static bool b = false;
+    if(!b)
+    {
+        if(!cam.isOpened())
+        {
+            return false;
+        }
+        cam >> m_cvOrigImage;
+        bool imageOpened = applyBrightnessContrast();
+        if(imageOpened)
+        {
+            this->update();
+        }
+        emit resetControls();
+        return imageOpened;
+    }
+    //
+
     m_cvOrigImage = cv::imread(fileName.toStdString());
+    //test-remove
+    //imshow("Output", m_cvOrigImage);
+    //
     bool imageOpened = applyBrightnessContrast();
     if(imageOpened)
     {
