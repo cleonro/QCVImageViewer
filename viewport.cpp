@@ -99,23 +99,23 @@ void ViewPort::resizeImage(int width, int height)
 bool ViewPort::openImageFile(const QString &fileName)
 {
     //test-remove
-    static cv::VideoCapture cam = cv::VideoCapture(0);
-    static bool b = false;
-    if(!b)
-    {
-        if(!cam.isOpened())
-        {
-            return false;
-        }
-        cam >> m_cvOrigImage;
-        bool imageOpened = applyBrightnessContrast();
-        if(imageOpened)
-        {
-            this->update();
-        }
-        emit resetControls();
-        return imageOpened;
-    }
+//    cv::VideoCapture cam = cv::VideoCapture(0);
+//    static bool b = false;
+//    if(!b)
+//    {
+//        if(!cam.isOpened())
+//        {
+//            return false;
+//        }
+//        cam >> m_cvOrigImage;
+//        bool imageOpened = applyBrightnessContrast();
+//        if(imageOpened)
+//        {
+//            this->update();
+//        }
+//        emit resetControls();
+//        return imageOpened;
+//    }
     //
 
     m_cvOrigImage = cv::imread(fileName.toStdString());
@@ -155,7 +155,10 @@ bool ViewPort::openImage()
     }
 
     //TODO - replacement for QGLWidget::convertToGLFormat
-    m_renderImage = QGLWidget::convertToGLFormat(m_renderImage);
+    //m_renderImage = QGLWidget::convertToGLFormat(m_renderImage);
+    QMatrix m;
+    m.scale(1, -1);
+    m_renderImage = m_renderImage.transformed(m);
 
     int w = this->width();
     int h = this->height();
@@ -182,7 +185,7 @@ bool ViewPort::changeBrightnessContrast(int brightness, float contrast)
 
 bool ViewPort::applyBrightnessContrast()
 {
-    m_cvImage = cv::Mat::zeros( m_cvOrigImage.size(), m_cvOrigImage.type() );
+    //m_cvImage = cv::Mat::zeros( m_cvOrigImage.size(), m_cvOrigImage.type() );
 
 //    for( int y = 0; y < m_cvOrigImage.rows; y++ )
 //    {
@@ -197,7 +200,8 @@ bool ViewPort::applyBrightnessContrast()
 //        }
 //    }
 
-    m_cvOrigImage.convertTo(m_cvImage, -1, m_contrast, m_brightness);
+    //m_cvOrigImage.convertTo(m_cvImage, -1, m_contrast, m_brightness);
+    m_cvImage = m_contrast * (m_cvOrigImage + m_brightness);
 
     return openImage();
 }
