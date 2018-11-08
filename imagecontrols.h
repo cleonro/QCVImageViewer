@@ -22,10 +22,22 @@ public:
     ~ImageControls();
 
     void setImageViewPort(ViewPort* imageViewPort);
+    int selectedCamera();
+
+signals:
+    void showCamera(bool);
+    void cameraIndexChanged(int);
 
 private slots:
     void onSliderValueChanged(int value);
     void onReset();
+
+    void on_cameraList_currentIndexChanged(int index);
+
+    void on_cameraShow_stateChanged(int arg1);
+
+private:
+    void listCameras();
 
 private:
     Ui::ImageControls* ui;
@@ -33,6 +45,8 @@ private:
 
     int         m_brightness;
     float       m_contrast;
+
+    int m_cameraIndex;
 };
 
 #endif //_IMAGE_CONTROLS_H_

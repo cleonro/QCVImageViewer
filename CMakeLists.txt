@@ -9,6 +9,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 find_package(Qt5Widgets REQUIRED)
 find_package(Qt5OpenGL REQUIRED)
+find_package(Qt5Multimedia REQUIRED)
 find_package(OpenGL REQUIRED)
 
 if(OPENGL_FOUND AND OPENGL_GLU_FOUND)
@@ -53,5 +54,5 @@ source_group("MOC" FILES ${MOC_SRCS})
 add_executable(QCVImageViewer ${SRCS} ${FRMS_SRCS} ${MOC_SRCS})
 set_target_properties(QCVImageViewer PROPERTIES
 				RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
-qt5_use_modules(QCVImageViewer Widgets OpenGL)
+qt5_use_modules(QCVImageViewer Widgets OpenGL Multimedia)
 target_link_libraries(QCVImageViewer ${OPENGL_LIBRARIES} ${OpenCV_LIBS})

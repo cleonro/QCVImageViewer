@@ -125,6 +125,31 @@
     </layout>
    </item>
    <item>
+    <widget class="QGroupBox" name="groupBox">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>100</height>
+      </size>
+     </property>
+     <property name="title">
+      <string>Camera</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_4">
+      <item>
+       <widget class="QComboBox" name="cameraList"/>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="cameraShow">
+        <property name="text">
+         <string>Show</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
     <spacer name="verticalSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>

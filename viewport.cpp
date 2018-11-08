@@ -12,11 +12,16 @@ ViewPort::ViewPort(QWidget *parent)  :
 
     m_brightness = 0;
     m_contrast = 1.0;
+
+    m_showCamera = false;
+    m_cameraIndex = -1;
+    m_timer.setInterval(1000.0 / 60.0);
+    connect(&m_timer, &QTimer::timeout, this, &ViewPort::onTimer);
 }
 
 ViewPort::~ViewPort()
 {
-
+    m_timer.stop();
 }
 
 void ViewPort::initializeGL()
@@ -98,30 +103,7 @@ void ViewPort::resizeImage(int width, int height)
 
 bool ViewPort::openImageFile(const QString &fileName)
 {
-    //test-remove
-//    cv::VideoCapture cam = cv::VideoCapture(0);
-//    static bool b = false;
-//    if(!b)
-//    {
-//        if(!cam.isOpened())
-//        {
-//            return false;
-//        }
-//        cam >> m_cvOrigImage;
-//        bool imageOpened = applyBrightnessContrast();
-//        if(imageOpened)
-//        {
-//            this->update();
-//        }
-//        emit resetControls();
-//        return imageOpened;
-//    }
-    //
-
     m_cvOrigImage = cv::imread(fileName.toStdString());
-    //test-remove
-    //imshow("Output", m_cvOrigImage);
-    //
     bool imageOpened = applyBrightnessContrast();
     if(imageOpened)
     {
@@ -155,10 +137,11 @@ bool ViewPort::openImage()
     }
 
     //TODO - replacement for QGLWidget::convertToGLFormat
-    //m_renderImage = QGLWidget::convertToGLFormat(m_renderImage);
-    QMatrix m;
-    m.scale(1, -1);
-    m_renderImage = m_renderImage.transformed(m);
+    m_renderImage = QGLWidget::convertToGLFormat(m_renderImage);
+    //not perfect - hue problems, keep convertToGLFormat
+//    QMatrix m;
+//    m.scale(1, -1);
+//    m_renderImage = m_renderImage.transformed(m);
 
     int w = this->width();
     int h = this->height();
@@ -200,8 +183,47 @@ bool ViewPort::applyBrightnessContrast()
 //        }
 //    }
 
-    //m_cvOrigImage.convertTo(m_cvImage, -1, m_contrast, m_brightness);
-    m_cvImage = m_contrast * (m_cvOrigImage + m_brightness);
+    m_cvOrigImage.convertTo(m_cvImage, -1, m_contrast, m_brightness);
+
+    //m_cvImage = m_contrast * (m_cvOrigImage + m_brightness);
+
+    //m_cvImage = m_cvOrigImage;
 
     return openImage();
+}
+
+void ViewPort::showCamera(bool show)
+{
+    m_showCamera = show;
+    if(show)
+    {
+        m_videoCapture.open(m_cameraIndex);
+        m_timer.start();
+    }
+    else
+    {
+        m_videoCapture.release();
+        m_timer.stop();
+    }
+}
+
+void ViewPort::setCameraIndex(int index)
+{
+    m_timer.stop();
+    m_videoCapture.release();
+    m_cameraIndex = index;
+    if(index >= 0 && m_showCamera)
+    {
+        showCamera(true);
+    }
+}
+
+void ViewPort::onTimer()
+{
+    m_videoCapture >> m_cvOrigImage;
+    bool imageOpened = applyBrightnessContrast();
+    if(imageOpened)
+    {
+        this->update();
+    }
 }

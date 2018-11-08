@@ -3,6 +3,7 @@
 
 #include <QOpenGLWidget>
 #include <QImage>
+#include <QTimer>
 
 #include <opencv2/highgui.hpp>
 
@@ -23,10 +24,18 @@ public:
 signals:
     void resetControls();
 
+public slots:
+    void showCamera(bool show);
+    void setCameraIndex(int index);
+
+
 protected:
     void initializeGL();
     void paintGL();
     void resizeGL(int width, int height);
+
+private slots:
+    void onTimer();
 
 private:
     bool openImage();
@@ -48,6 +57,12 @@ private:
 
     int            m_brightness;
     float          m_contrast;
+
+    bool                m_showCamera;
+    int                 m_cameraIndex;
+    QTimer              m_timer;
+    cv::VideoCapture    m_videoCapture;
+
 };
 
 #endif //_VIEW_PORT_H_
