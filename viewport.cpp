@@ -1,6 +1,9 @@
 #include "viewport.h"
 #include <QGLWidget>
 
+#include <opencv2/core.hpp>
+#include <opencv2/imgproc.hpp>
+
 ViewPort::ViewPort(QWidget *parent)  :
     QOpenGLWidget(parent)
 {
@@ -15,7 +18,7 @@ ViewPort::ViewPort(QWidget *parent)  :
 
     m_showCamera = false;
     m_cameraIndex = -1;
-    m_timer.setInterval(1000.0 / 60.0);
+    m_timer.setInterval(1000.0 / 30.0);
     connect(&m_timer, &QTimer::timeout, this, &ViewPort::onTimer);
 }
 
@@ -117,6 +120,19 @@ bool ViewPort::openImage()
 {
     m_imageRatio = float(m_cvImage.cols) / float(m_cvImage.rows);
 
+    if(m_showCamera)
+    {
+        double width = 0;
+        double height = 0;
+        double fps = 0;
+        width = m_videoCapture.get(cv::CAP_PROP_FRAME_WIDTH);
+        height = m_videoCapture.get(cv::CAP_PROP_FRAME_HEIGHT);
+        fps = m_videoCapture.get(cv::CAP_PROP_FPS);
+        QString str = QString("[%1, %2] %3FPS").arg(width).arg(height).arg(fps);
+        cv::putText(m_cvImage, str.toStdString(), cv::Point(30,30),
+                    cv::FONT_HERSHEY_COMPLEX_SMALL, 1.0, cv::Scalar(250,200,200));
+    }
+
     int channels = m_cvImage.channels();
 
     if(channels == 3)
@@ -198,6 +214,9 @@ void ViewPort::showCamera(bool show)
     if(show)
     {
         m_videoCapture.open(m_cameraIndex);
+        m_videoCapture.set(cv::CAP_PROP_FPS, 30);
+        m_videoCapture.set(cv::CAP_PROP_FRAME_WIDTH, 1280);
+        m_videoCapture.set(cv::CAP_PROP_FRAME_HEIGHT, 720);
         m_timer.start();
     }
     else
