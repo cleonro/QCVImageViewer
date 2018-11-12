@@ -236,6 +236,11 @@ void ViewPort::setCameraIndex(int index)
 void ViewPort::onTimer()
 {
     m_videoCapture >> m_cvOrigImage;
+    if(m_cvOrigImage.empty())
+    {
+        qDebug() << "No video frame";
+        return;
+    }
     bool imageOpened = applyBrightnessContrast();
     if(imageOpened)
     {
