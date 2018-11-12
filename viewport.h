@@ -6,6 +6,7 @@
 #include <QTimer>
 
 #include <opencv2/highgui.hpp>
+#include <opencv2/objdetect.hpp>
 
 //https://wiki.qt.io/OpenCV_with_Qt
 
@@ -43,6 +44,10 @@ private:
     void resizeImage(int width, int height);
     bool applyBrightnessContrast();
 
+    void writeOnImage();
+    void detectFace();
+    void initClassifiers();
+
 private:
     QImage    m_renderImage;         // Qt image built from loaded cv image
     QImage    m_resizedRenderImage;  // resized image that will be rendered in the viewport
@@ -62,6 +67,9 @@ private:
     int                 m_cameraIndex;
     QTimer              m_timer;
     cv::VideoCapture    m_videoCapture;
+
+    cv::CascadeClassifier   m_cascade;
+    cv::CascadeClassifier   m_nestedCascade;
 
 };
 
