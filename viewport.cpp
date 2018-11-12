@@ -238,7 +238,14 @@ void ViewPort::onTimer()
     m_videoCapture >> m_cvOrigImage;
     if(m_cvOrigImage.empty())
     {
-        qDebug() << "No video frame";
+        qDebug() << "No video frame - reset frame size.";
+        m_videoCapture.release();
+
+        m_videoCapture.open(m_cameraIndex);
+        m_videoCapture.set(cv::CAP_PROP_FPS, 30);
+        m_videoCapture.set(cv::CAP_PROP_FRAME_WIDTH, 640);
+        m_videoCapture.set(cv::CAP_PROP_FRAME_HEIGHT, 480);
+
         return;
     }
     bool imageOpened = applyBrightnessContrast();
