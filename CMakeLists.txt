@@ -31,6 +31,8 @@ file(WRITE
 try_compile(C++11_TEST ${CMAKE_BINARY_DIR} ${CMAKE_BINARY_DIR}/CMakeTemp/testC++11.cpp)
 message("C++11_TEST " ${C++11_TEST})
 
+file(COPY data DESTINATION ${CMAKE_BINARY_DIR})
+
 include_directories(${OpenCV_INCLUDE_DIRS})
 
 set(SRCS 
