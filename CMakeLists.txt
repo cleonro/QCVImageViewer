@@ -40,6 +40,8 @@ set(SRCS
 		mainwindow.h mainwindow.cpp
 		viewport.h viewport.cpp
 		imagecontrols.h imagecontrols.cpp
+                viewportbase.h viewportbase.cpp
+                viewportopengl.h viewportopengl.cpp
 	)
 set(HDRS )
 set(FRMS 
