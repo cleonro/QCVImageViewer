@@ -3,22 +3,26 @@
 
 #include "viewportbase.h"
 
+#include <QOpenGLWidget>
+
+class ViewportOpenGLWidget;
+
 class ViewportOpenGL : public ViewportBase
 {
     Q_OBJECT
 public:
-    ViewportOpenGL(QObject *parent = nullptr);
+    ViewportOpenGL(QWidget *parent = nullptr);
     ~ViewportOpenGL();
 
-    virtual QWidget *viewport();
+    QWidget *viewport();
 
-    virtual void addImage(const cv::Mat &cvImage);
+    void addImage(const cv::Mat &cvImage);
 
 protected:
 
 
 private:
-
+    ViewportOpenGLWidget *m_widget;
 };
 
 #endif //VIEWPORT_OPENGL_H

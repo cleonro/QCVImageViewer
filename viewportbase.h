@@ -3,13 +3,13 @@
 
 #include <opencv2/core/mat.hpp>
 
-#include <QObject>
+#include <QWidget>
 
 class ViewportBase : public QObject
 {
     Q_OBJECT
 public:
-    ViewportBase(QObject *parent = nullptr);
+    ViewportBase(QWidget *parent = nullptr);
     virtual ~ViewportBase();
 
     virtual QWidget *viewport();

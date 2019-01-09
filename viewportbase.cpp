@@ -1,6 +1,6 @@
 #include "viewportbase.h"
 
-ViewportBase::ViewportBase(QObject *parent)
+ViewportBase::ViewportBase(QWidget *parent)
     : QObject(parent)
 {
 
