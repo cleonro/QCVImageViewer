@@ -22,6 +22,7 @@ private:
 
 private:
     QImage m_image;
+    QImage m_imageOriginal;
     int m_x;
     int m_y;
 };
@@ -83,7 +84,37 @@ void ViewportOpenGLWidget::renderImage()
 
 void ViewportOpenGLWidget::resizeImage(int width, int height)
 {
+    if(m_imageOriginal.isNull())
+    {
+        return;
+    }
 
+    int w = m_imageOriginal.width();
+    int h = m_imageOriginal.height();
+    double imageRatio = (h + 0.0) / w;
+
+    int resizedWidth = width;
+    int resizedHeight = static_cast<int>(width / imageRatio);
+    if(resizedHeight > height)
+    {
+        resizedWidth = static_cast<int>(height * imageRatio);
+        resizedHeight = height;
+    }
+
+    m_x = (width - resizedWidth) / 2;
+    m_y = (height - resizedHeight) / 2;
+
+    if(w != width && h != height)
+    {
+        m_image = m_imageOriginal.scaled(QSize(resizedWidth, resizedHeight),
+                                                                                        Qt::IgnoreAspectRatio,
+                                                                                        Qt::SmoothTransformation
+                                                                                    );
+    }
+    else
+    {
+        m_image = m_imageOriginal;
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
