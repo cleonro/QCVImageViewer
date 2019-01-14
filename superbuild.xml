@@ -1,0 +1,59 @@
+<SuperBuild>
+    <WorkingDirectory>
+    </WorkingDirectory>
+    <!--
+        Take care of CMAKE_BUILD_TYPE and CMAKE_INSTALL_PREFIX
+    -->
+    <BuildType>
+        Debug
+    </BuildType>
+    <Projects>
+        <VTK>
+            <Checkout>
+                <repository>git://vtk.org/VTK.git</repository>
+                <branch>release</branch>
+            </Checkout>
+            <Configure>
+                <generator>Ninja</generator>
+                <variable name="BUILD_TESTING" type="BOOL">false</variable>
+                <variable name="VTK_Group_Qt" type="BOOL">false</variable>
+                <variable name="Module_vtkGUISupportQt" type="BOOL">true</variable>
+                <variable name="Module_vtkGUISupportQtOpenGL" type="BOOL">true</variable>
+                <variable name="Module_vtkGUISupportQtSQL" type="BOOL">false</variable>
+                <variable name="Module_vtkGUISupportQtWebkit" type="BOOL">false</variable>
+                <variable name="Module_vtkRenderingQt" type="BOOL">true</variable>
+                <variable name="Module_vtkViewsQt" type="BOOL">true</variable>
+            </Configure>
+            <Build>
+            </Build>
+        </VTK>
+        <OpenCV>
+        	<Checkout>
+                <repository>https://github.com/opencv/opencv.git</repository>
+                <branch>master</branch>
+            </Checkout>
+            <Configure>
+            	<generator>Ninja</generator>
+            	<variable name="VTK_DIR" type="PROJECTBUILDPATH">VTK</variable>
+            	<variable name="WITH_QT" type="BOOL">true</variable>
+            	<variable name="WITH_VTK" type="BOOL">true</variable>
+            	<variable name="BUILD_EXAMPLES" type="BOOL">true</variable>
+            </Configure>
+            <Build>
+            </Build>
+        </OpenCV>
+        <QCVImageViewer>
+            <Checkout>
+                <repository>git@github-cleonro:cleonro/QCVImageViewer.git</repository>
+                <branch>develop</branch>
+            </Checkout>
+            <Configure>
+                <generator>Ninja</generator>
+                <variable name="VTK_DIR" type="PROJECTBUILDPATH">VTK</variable>
+                <variable name="OpenCV_DIR" type="PROJECTBUILDPATH">OpenCV</variable>
+            </Configure>
+            <Build>
+            </Build>
+        </QCVImageViewer>
+    </Projects>
+</SuperBuild>
