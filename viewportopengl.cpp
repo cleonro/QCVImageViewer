@@ -21,14 +21,19 @@ private:
     void resizeImage(int width, int height);
 
 private:
-    QImage m_image;
+    //QImage m_image;
     QImage m_imageOriginal;
     int m_x;
     int m_y;
+    GLfloat m_vertices[8];
 };
 
 ViewportOpenGLWidget::ViewportOpenGLWidget(QWidget *parent)
     : QOpenGLWidget(parent)
+    , m_vertices{0.0f, 0.0f,
+                   0.0f, 1.0f,
+                   1.0f, 1.1f,
+                   1.0f, 0.0f}
 {
     m_x = 0;
     m_y = 0;
@@ -41,7 +46,11 @@ ViewportOpenGLWidget::~ViewportOpenGLWidget()
 
 void ViewportOpenGLWidget::initializeGL()
 {
-    glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
+    glClearColor(0.3f, 0.3f, 0.7f, 1.0f);
+
+    glDisable(GL_CULL_FACE);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 void ViewportOpenGLWidget::paintGL()
@@ -65,56 +74,71 @@ void ViewportOpenGLWidget::resizeGL(int width, int height)
 
 void ViewportOpenGLWidget::renderImage()
 {
-    if(m_image.isNull())
-    {
-        return;
-    }
+//    if(m_image.isNull())
+//    {
+//        return;
+//    }
 
-    int w = m_image.width();
-    int h = m_image.height();
+//    int w = m_image.width();
+//    int h = m_image.height();
 
     glLoadIdentity();
     glPushMatrix();
 
-    glRasterPos2i(m_x, m_y);
-    glDrawPixels(w, h, GL_RGBA, GL_UNSIGNED_BYTE, m_image.bits());
+//    glRasterPos2i(m_x, m_y);
+//    glDrawPixels(w, h, GL_RGBA, GL_UNSIGNED_BYTE, m_image.bits());
+
+    glEnableClientState(GL_VERTEX_ARRAY);
+    //glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    glVertexPointer(2, GL_FLOAT, 0, m_vertices);
+    //glTexCoordPointer(2, GL_FLOAT, 0, tcoord);
+    glDrawArrays(GL_QUADS, 0, 4);
 
     glPopMatrix();
 }
 
 void ViewportOpenGLWidget::resizeImage(int width, int height)
 {
-    if(m_imageOriginal.isNull())
-    {
-        return;
-    }
+//    if(m_imageOriginal.isNull())
+//    {
+//        return;
+//    }
 
-    int w = m_imageOriginal.width();
-    int h = m_imageOriginal.height();
+    int w = 1200;//m_imageOriginal.width();
+    int h = 800;//m_imageOriginal.height();
     double imageRatio = (h + 0.0) / w;
 
     int resizedWidth = width;
-    int resizedHeight = static_cast<int>(width / imageRatio);
+    int resizedHeight = static_cast<int>(width * imageRatio);
     if(resizedHeight > height)
     {
-        resizedWidth = static_cast<int>(height * imageRatio);
+        resizedWidth = static_cast<int>(height / imageRatio);
         resizedHeight = height;
     }
 
     m_x = (width - resizedWidth) / 2;
     m_y = (height - resizedHeight) / 2;
 
-    if(w != width && h != height)
-    {
-        m_image = m_imageOriginal.scaled(QSize(resizedWidth, resizedHeight),
-                                                                                        Qt::IgnoreAspectRatio,
-                                                                                        Qt::SmoothTransformation
-                                                                                    );
-    }
-    else
-    {
-        m_image = m_imageOriginal;
-    }
+//    if(w != width && h != height)
+//    {
+//        m_image = m_imageOriginal.scaled(QSize(resizedWidth, resizedHeight),
+//                                                                                        Qt::IgnoreAspectRatio,
+//                                                                                        Qt::SmoothTransformation
+//                                                                                    );
+//    }
+//    else
+//    {
+//        m_image = m_imageOriginal;
+//    }
+
+    m_vertices[0] = /*10;//*/m_x;
+    m_vertices[1] = /*10;//*/m_y;
+    m_vertices[2] = /*10;//*/m_x;
+    m_vertices[3] = /*80;//*/m_y + resizedHeight;
+    m_vertices[4] = /*80;//*/m_x + resizedWidth;
+    m_vertices[5] = /*80;//*/m_y + resizedHeight;
+    m_vertices[6] = /*80;//*/m_x + resizedWidth;
+    m_vertices[7] = /*10;//*/m_y;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
