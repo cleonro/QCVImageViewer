@@ -1,7 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 //#include "viewport.h"
-#include "viewportopengl.h"
+#include "viewportcontroller.h"
 #include "imagecontrols.h"
 
 #include <QFileDialog>
@@ -21,8 +21,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //m_viewPort = new ViewPort(this);
     //this->setCentralWidget(m_viewPort);
-    m_viewPort = new ViewportOpenGL(this);
-    this->setCentralWidget(m_viewPort->viewport());
+    m_controller = new ViewportController(this);
+    this->setCentralWidget(m_controller->initViewport(ViewportController::OPENGL));
 
     addControlWidgets();
     setWindowTitle("QCVImageViewer");
@@ -58,14 +58,15 @@ void MainWindow::onOpenActionTriggered()
 
 void MainWindow::addControlWidgets()
 {
-//    QDockWidget* dock = new QDockWidget(tr("Image Controls"), this);
-//    ImageControls* controls = new ImageControls(this);
+    QDockWidget* dock = new QDockWidget(tr("Image Controls"), this);
+    ImageControls* controls = new ImageControls(this);
 //    controls->setImageViewPort(m_viewPort);
-//    dock->setWidget(controls);
+    controls->setController(m_controller);
+    dock->setWidget(controls);
 
-//    this->addDockWidget(Qt::LeftDockWidgetArea, dock);
-//    dock->setFloating(false);
-//    dock->hide();
+    this->addDockWidget(Qt::LeftDockWidgetArea, dock);
+    dock->setFloating(false);
+    dock->hide();
 
-//    ui->menuWindow->addAction(dock->toggleViewAction());
+    ui->menuWindow->addAction(dock->toggleViewAction());
 }
