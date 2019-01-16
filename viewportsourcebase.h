@@ -1,6 +1,8 @@
 #ifndef VIEWPORT_SOURCE_BASE_H
 #define VIEWPORT_SOURCE_BASE_H
 
+#include <opencv2/core/mat.hpp>
+
 #include <QObject>
 
 class ViewportSourceBase : public QObject
@@ -14,7 +16,7 @@ public:
     virtual void close();
 
 signals:
-    void imageChanged();
+    void imageChanged(const cv::Mat &cvImage);
 
 private:
 

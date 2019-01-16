@@ -50,14 +50,18 @@ set(FRMS
 	mainwindow.ui
 	imagecontrols.ui
 	)
+set(RCS
+        resource.qrc
+        )
 qt5_wrap_ui(FRMS_SRCS ${FRMS})
 qt5_wrap_cpp(MOC_SRCS ${HDRS})
+qt5_add_resources(UI_RESOURCES ${RCS})
 
 source_group("Forms" FILES ${FRMS})
 source_group("Headers" FILES ${HDRS})
 source_group("MOC" FILES ${MOC_SRCS})
 
-add_executable(QCVImageViewer ${SRCS} ${FRMS_SRCS} ${MOC_SRCS})
+add_executable(QCVImageViewer ${SRCS} ${FRMS_SRCS} ${MOC_SRCS} ${UI_RESOURCES})
 set_target_properties(QCVImageViewer PROPERTIES
 				RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 qt5_use_modules(QCVImageViewer Widgets OpenGL Multimedia)

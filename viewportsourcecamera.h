@@ -5,6 +5,8 @@
 
 #include <opencv2/highgui.hpp>
 
+#include <QTimer>
+
 class ViewportSourceCamera : public ViewportSourceBase
 {
     Q_OBJECT
@@ -15,7 +17,15 @@ public:
     void open(void *source);
     void close();
 
+private slots:
+    void onTimer();
+
 private:
+    void openCamera();
+    void takeImage();
+
+private:
+    QTimer m_timer;
     int m_cameraIndex;
     cv::VideoCapture m_videoCapture;
     cv::Mat m_cvImage;
