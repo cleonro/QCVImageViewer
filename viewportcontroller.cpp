@@ -42,7 +42,8 @@ void ViewportController::openCamera(int cameraIndex)
 
     m_viewportSource = new ViewportSourceCamera(this);
     connect(m_viewportSource, &ViewportSourceBase::imageChanged, this, &ViewportController::onImageChanged);
-    m_viewportSource->open(static_cast<void*>(&cameraIndex));
+    int ci = cameraIndex;
+    m_viewportSource->open((void*)(&ci));
 }
 
 void ViewportController::onImageChanged(const cv::Mat &cvImage)

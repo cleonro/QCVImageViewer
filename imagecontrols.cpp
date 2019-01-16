@@ -82,7 +82,10 @@ void ImageControls::on_cameraList_currentIndexChanged(int index)
         ui->cameraShow->setEnabled(true);
     }
     //emit cameraIndexChanged(index);
-    m_controller->openCamera(index);
+    if(m_controller != nullptr)
+    {
+        m_controller->openCamera(index);
+    }
 }
 
 void ImageControls::on_cameraShow_stateChanged(int arg1)
