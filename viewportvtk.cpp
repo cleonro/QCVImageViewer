@@ -2,7 +2,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////
 
-#include <QVTKOpenGLWidget.h>
+#include <QVTKOpenGLNativeWidget.h>
 #include <vtkSmartPointer.h>
 #include <vtkRenderer.h>
 #include <vtkGenericOpenGLRenderWindow.h>
@@ -10,8 +10,9 @@
 #include <vtkInteractorStyleImage.h>
 #include <vtkRenderWindowInteractor.h>
 #include <vtkImageData.h>
+#include <vtkCamera.h>
 
-class ViewportVTKWidget : public QVTKOpenGLWidget
+class ViewportVTKWidget : public QVTKOpenGLNativeWidget
 {
     Q_OBJECT
     friend class ViewportVTK;
@@ -19,10 +20,14 @@ public:
     ViewportVTKWidget(QWidget *parent = nullptr);
     ~ViewportVTKWidget();
 
+protected:
+    void resizeGL(int width, int height);
+
 private:
     void addImage(const cv::Mat &cvImage);
+    void resizeImage(int width, int height);
 
-    void initImporter();
+    void init();
     void convertTovtkImageData(const cv::Mat& frame);
 
 private:
@@ -33,7 +38,7 @@ private:
 };
 
 ViewportVTKWidget::ViewportVTKWidget(QWidget *parent)
-    : QVTKOpenGLWidget(parent)
+    : QVTKOpenGLNativeWidget(parent)
 {
     vtkSmartPointer<vtkGenericOpenGLRenderWindow> renWin = vtkSmartPointer<vtkGenericOpenGLRenderWindow>::New();
     this->SetRenderWindow(renWin);
@@ -43,7 +48,7 @@ ViewportVTKWidget::ViewportVTKWidget(QWidget *parent)
 
     this->setAttribute(Qt::WA_DontCreateNativeAncestors);
 
-    initImporter();
+    init();
 }
 
 ViewportVTKWidget::~ViewportVTKWidget()
@@ -56,11 +61,12 @@ void ViewportVTKWidget::addImage(const cv::Mat &cvImage)
     convertTovtkImageData(cvImage);
     m_actor->SetInputData(m_imageData);
 
-    m_renderer->ResetCamera();
+    //m_renderer->ResetCamera();
+    resizeImage(this->width(), this->height());
     this->GetRenderWindow()->Render();
 }
 
-void ViewportVTKWidget::initImporter()
+void ViewportVTKWidget::init()
 {
     m_actor = vtkSmartPointer<vtkImageActor>::New();
 
@@ -68,7 +74,9 @@ void ViewportVTKWidget::initImporter()
     m_actor->SetInputData(m_imageData);
 
     m_renderer->AddActor(m_actor);
-    m_renderer->ResetCamera();
+    vtkCamera* camera = m_renderer->GetActiveCamera();
+    camera->ParallelProjectionOn();
+    //m_renderer->ResetCamera();
 
     m_interactorStyle = vtkSmartPointer<vtkInteractorStyleImage>::New();
     this->GetRenderWindow()->GetInteractor()->SetInteractorStyle(m_interactorStyle);
@@ -77,64 +85,75 @@ void ViewportVTKWidget::initImporter()
 
 void ViewportVTKWidget::convertTovtkImageData(const cv::Mat &frame)
 {
-    vtkSmartPointer<vtkImageData> retval = vtkSmartPointer<vtkImageData>::New();
+    m_imageData->SetDimensions(frame.cols, frame.rows, 1);
+    m_imageData->SetSpacing(1,1,1);
 
-    retval->SetDimensions(frame.cols, frame.rows, 1);
-    retval->SetSpacing(1,1,1);
+    int channels = frame.channels();
+    m_imageData->AllocateScalars(VTK_UNSIGNED_CHAR, channels);
 
-    retval->AllocateScalars(VTK_UNSIGNED_CHAR, frame.channels());
-
-    unsigned char* dest = reinterpret_cast<unsigned char*> (retval->GetScalarPointer());
-    uchar* src = frame.data;
-    int N = frame.rows * frame.cols;
-
-    if (frame.channels() == 3)
+    if (channels == 3)
     {
-        if (frame.isContinuous())
+        for(int i = 0; i < frame.cols; ++i)
         {
-            // 3-channel continous colors
-            for (int i = 0; i < N; ++i)
+            for(int j = 0; j < frame.rows; ++j)
             {
-                *dest++ = src[2]; // R
-                *dest++ = src[1]; // G
-                *dest++ = src[0]; // B
-                src += 3;
+                int mj = frame.rows - 1 - j;
+                unsigned char* d = reinterpret_cast<unsigned char*> (m_imageData->GetScalarPointer(i, j, 0));
+                *d = frame.at<cv::Vec3b>(mj, i)[2];
+                *(d + 1) = frame.at<cv::Vec3b>(mj, i)[1];
+                *(d + 2) = frame.at<cv::Vec3b>(mj, i)[0];
             }
         }
-        else
+    }
+    if (channels == 1)
+    {
+        for(int i = 0; i < frame.cols; ++i)
         {
-//			std::cout << "noncontinous conversion, rows=" << size[1] << std::endl;
-            for (int i=0; i < frame.rows; ++i)
+            for(int j = 0; j < frame.rows; ++j)
             {
-                 const uchar* src = frame.ptr<uchar>(i);
-                 for (int j=0; j < frame.cols; ++j)
-                 {
-                        *dest++ = src[2];
-                        *dest++ = src[1];
-                        *dest++ = src[0];
-                        src += 3;
-                 }
+                int mj = frame.rows - 1 - j;
+                unsigned char* d = reinterpret_cast<unsigned char*> (m_imageData->GetScalarPointer(i, j, 0));
+                *d = frame.at<uchar>(mj, i);
             }
         }
-//		colorFormat = "ARGB";
     }
-    if (frame.channels() == 1)
+
+    m_imageData->Modified();
+}
+
+void ViewportVTKWidget::resizeGL(int width, int height)
+{
+    QVTKOpenGLNativeWidget::resizeGL(width, height);
+    resizeImage(width, height);
+}
+
+void ViewportVTKWidget::resizeImage(int width, int height)
+{
+    int extent[6];
+    double origin[3];
+    double spacing[3];
+
+    m_imageData->GetExtent(extent);
+    m_imageData->GetOrigin(origin);
+    m_imageData->GetSpacing(spacing);
+
+    vtkCamera *camera = m_renderer->GetActiveCamera();
+    double xc = origin[0] + 0.5 * (extent[0] + extent[1]) * spacing[0];
+    double yc = origin[1] + 0.5 * (extent[2] + extent[3]) * spacing[1];
+    double xd = (extent[1] - extent[0] + 1) * spacing[0];
+    double yd = (extent[3] - extent[2] + 1) * spacing[1];
+    double imageRatio = yd / xd;
+    double d = camera->GetDistance();
+    if(imageRatio * width > height)
     {
-        if (!frame.isContinuous())
-        {
-            std::cout << "Error: Non-continous frame data." << std::endl;
-            return;
-        }
-
-        // BW camera
-        for (int i = 0; i < N; ++i)
-        {
-            *dest++ = *src++;
-        }
-//		colorFormat = "R";
+        camera->SetParallelScale(0.5 * yd);
     }
-
-    m_imageData = retval;
+    else
+    {
+        camera->SetParallelScale(0.5 * xd * (height + 0.0) / width);
+    }
+    camera->SetFocalPoint(xc, yc, 0.0);
+    camera->SetPosition(xc, yc, +d);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////

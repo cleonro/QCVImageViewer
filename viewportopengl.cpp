@@ -25,8 +25,7 @@ private:
     void bindImage();
 
 private:
-    //QImage m_image;
-    QImage m_imageOriginal;
+    QImage m_image;
     int m_x;
     int m_y;
     GLuint m_textureId;
@@ -69,13 +68,11 @@ void ViewportOpenGLWidget::initializeGL()
 
     glGenTextures(1, &m_textureId);
 
-    //test-remove
-    m_imageOriginal = QPixmap(":/test.jpg").toImage();
-    if(!m_imageOriginal.isNull())
+    m_image = QPixmap(":/test.jpg").toImage();
+    if(!m_image.isNull())
     {
         bindImage();
     }
-    //
 }
 
 void ViewportOpenGLWidget::paintGL()
@@ -99,19 +96,8 @@ void ViewportOpenGLWidget::resizeGL(int width, int height)
 
 void ViewportOpenGLWidget::renderImage()
 {
-//    if(m_image.isNull())
-//    {
-//        return;
-//    }
-
-//    int w = m_imageOriginal.width();
-//    int h = m_imageOriginal.height();
-
     glLoadIdentity();
     glPushMatrix();
-
-//    glRasterPos2i(m_x, m_y);
-//    glDrawPixels(w, h, GL_RGBA, GL_UNSIGNED_BYTE, m_imageOriginal.bits());
 
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -125,13 +111,13 @@ void ViewportOpenGLWidget::renderImage()
 
 void ViewportOpenGLWidget::resizeImage(int width, int height)
 {
-    if(m_imageOriginal.isNull())
+    if(m_image.isNull())
     {
         return;
     }
 
-    int w = m_imageOriginal.width();
-    int h = m_imageOriginal.height();
+    int w = m_image.width();
+    int h = m_image.height();
     double imageRatio = (h + 0.0) / w;
 
     int resizedWidth = width;
@@ -144,18 +130,6 @@ void ViewportOpenGLWidget::resizeImage(int width, int height)
 
     m_x = (width - resizedWidth) / 2;
     m_y = (height - resizedHeight) / 2;
-
-//    if(w != width && h != height)
-//    {
-//        m_image = m_imageOriginal.scaled(QSize(resizedWidth, resizedHeight),
-//                                                                                        Qt::IgnoreAspectRatio,
-//                                                                                        Qt::SmoothTransformation
-//                                                                                    );
-//    }
-//    else
-//    {
-//        m_image = m_imageOriginal;
-//    }
 
     m_vertices[0] = /*10;//*/m_x;
     m_vertices[1] = /*10;//*/m_y;
@@ -173,13 +147,13 @@ void ViewportOpenGLWidget::addImage(const cv::Mat &cvImage)
 
     if(channels == 3)
     {
-        m_imageOriginal = QImage(static_cast<const unsigned char*>(cvImage.data),
+        m_image = QImage(static_cast<const unsigned char*>(cvImage.data),
                                      cvImage.cols, cvImage.rows,
                                      static_cast<int>(cvImage.step), QImage::Format_RGB888).rgbSwapped();
     }
     else if(channels == 1)
     {
-        m_imageOriginal = QImage(static_cast<const unsigned char*>(cvImage.data),
+        m_image = QImage(static_cast<const unsigned char*>(cvImage.data),
                                       cvImage.cols, cvImage.rows,
                                       static_cast<int>(cvImage.step), QImage::Format_Indexed8);
     }
@@ -196,18 +170,18 @@ void ViewportOpenGLWidget::addImage(const cv::Mat &cvImage)
 void ViewportOpenGLWidget::bindImage()
 {
     //TODO - replacement for QGLWidget::convertToGLFormat
-    m_imageOriginal = QGLWidget::convertToGLFormat(m_imageOriginal);
+    m_image = QGLWidget::convertToGLFormat(m_image);
     //not perfect - hue problems, keep convertToGLFormat
 //    QMatrix m;
 //    m.scale(1, -1);
 //    m_imageOriginal = m_imageOriginal.transformed(m);
 
-    int w = m_imageOriginal.width();
-    int h = m_imageOriginal.height();
+    int w = m_image.width();
+    int h = m_image.height();
     glBindTexture(GL_TEXTURE_2D, m_textureId);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_imageOriginal.bits());
+    glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_image.bits());
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
