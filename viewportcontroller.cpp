@@ -1,5 +1,6 @@
 #include "viewportcontroller.h"
 #include "viewportopengl.h"
+#include "viewportvtk.h"
 #include "viewportsourcecamera.h"
 
 ViewportController::ViewportController(QWidget *parent)
@@ -30,6 +31,8 @@ QWidget *ViewportController::initViewport(const ViewportController::ViewportType
         case OPENGL:
             m_viewport = new  ViewportOpenGL(m_parent);
             break;
+        case VTK:
+            m_viewport = new ViewportVTK(m_parent);
     }
 
     return viewport();

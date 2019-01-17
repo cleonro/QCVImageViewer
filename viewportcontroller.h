@@ -14,7 +14,8 @@ class ViewportController : public QObject
 public:
     enum ViewportType
     {
-        OPENGL = 0
+        OPENGL = 0,
+        VTK = 1
     };
 
     enum ViewportSourceType

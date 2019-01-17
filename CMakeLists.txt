@@ -7,6 +7,42 @@ message("Configure QCVImageViewer with cmake " ${CMAKE_VERSION} "...")
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+find_package(VTK COMPONENTS
+        ##vtkCommonCore
+
+        ##vtkGUISupportQt
+        vtkGUISupportQtOpenGL
+
+        ##vtkInteractionStyle
+        vtkInteractionImage
+        ##vtkInteractionWidgets
+
+        ##vtkRenderingCore
+        ##vtkRenderingQt
+        ##vtkRenderingOpenGL
+        ##vtkRenderingFreeTypeOpenGL
+        ##vtkRenderingVolume
+
+        ####vtkRenderingVolumeOpenGL2
+
+        vtkIOGeometry
+        ##vtkIOLegacy
+        ##vtkIOMINC
+
+        ####vtkIOXML
+
+        ##vtkFiltersModeling
+        ##vtkParallelCore
+        ##vtkFiltersParallel
+
+        ##vtkImagingMath
+        ##vtkImagingMorphological
+        ##vtkImagingColor
+        ##vtkImagingStatistics
+REQUIRED)
+include(${VTK_USE_FILE})
+include_directories(${VTK_INCLUDE_DIRS})
+
 find_package(Qt5Widgets REQUIRED)
 find_package(Qt5OpenGL REQUIRED)
 find_package(Qt5Multimedia REQUIRED)
@@ -45,6 +81,7 @@ set(SRCS
                 viewportsourcebase.h viewportsourcebase.cpp
                 viewportsourcecamera.h viewportsourcecamera.cpp
                 viewportcontroller.h viewportcontroller.cpp
+                viewportvtk.h viewportvtk.cpp
 	)
 set(HDRS )
 set(FRMS 
@@ -66,4 +103,4 @@ add_executable(QCVImageViewer ${SRCS} ${FRMS_SRCS} ${MOC_SRCS} ${UI_RESOURCES})
 set_target_properties(QCVImageViewer PROPERTIES
 				RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 qt5_use_modules(QCVImageViewer Widgets OpenGL Multimedia)
-target_link_libraries(QCVImageViewer ${OPENGL_LIBRARIES} ${OpenCV_LIBS})
+target_link_libraries(QCVImageViewer ${OPENGL_LIBRARIES} ${OpenCV_LIBS} ${VTK_LIBRARIES})

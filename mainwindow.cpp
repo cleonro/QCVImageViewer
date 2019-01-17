@@ -22,7 +22,8 @@ MainWindow::MainWindow(QWidget *parent) :
     //m_viewPort = new ViewPort(this);
     //this->setCentralWidget(m_viewPort);
     m_controller = new ViewportController(this);
-    this->setCentralWidget(m_controller->initViewport(ViewportController::OPENGL));
+    //this->setCentralWidget(m_controller->initViewport(ViewportController::OPENGL));
+    this->setCentralWidget(m_controller->initViewport(ViewportController::VTK));
 
     addControlWidgets();
     setWindowTitle("QCVImageViewer");
