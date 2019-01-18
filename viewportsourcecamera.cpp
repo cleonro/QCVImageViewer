@@ -6,7 +6,7 @@ ViewportSourceCamera::ViewportSourceCamera(QObject *parent)
     : ViewportSourceBase (parent)
 {
     m_cameraIndex = -1;
-    m_timer.setInterval(1000 / 30 + 1);
+    m_timer.setInterval(1000 / 30);
     connect(&m_timer, &QTimer::timeout, this, &ViewportSourceCamera::onTimer);
 }
 

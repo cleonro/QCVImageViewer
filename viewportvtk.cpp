@@ -86,40 +86,41 @@ void ViewportVTKWidget::init()
 
 void ViewportVTKWidget::convertTovtkImageData1(const cv::Mat &cvImage)
 {
-    m_imageData->SetDimensions(cvImage.cols, cvImage.rows, 1);
-    m_imageData->SetSpacing(1,1,1);
+    vtkSmartPointer<vtkImageData> retVal = vtkSmartPointer<vtkImageData>::New();
+    retVal->SetDimensions(cvImage.cols, cvImage.rows, 1);
+    retVal->SetSpacing(1,1,1);
 
     int channels = cvImage.channels();
-    m_imageData->AllocateScalars(VTK_UNSIGNED_CHAR, channels);
+    retVal->AllocateScalars(VTK_UNSIGNED_CHAR, channels);
+
+    unsigned char* d = static_cast<unsigned char*>(retVal->GetScalarPointer());
 
     if (channels == 3)
     {
-        for(int i = 0; i < cvImage.cols; ++i)
+        for(int j = 0; j < cvImage.rows; ++j)
         {
-            for(int j = 0; j < cvImage.rows; ++j)
+            int mj = cvImage.rows - 1 - j;
+            for(int i = 0; i < cvImage.cols; ++i)
             {
-                int mj = cvImage.rows - 1 - j;
-                unsigned char* d = reinterpret_cast<unsigned char*> (m_imageData->GetScalarPointer(i, j, 0));
-                *d = cvImage.at<cv::Vec3b>(mj, i)[2];
-                *(d + 1) = cvImage.at<cv::Vec3b>(mj, i)[1];
-                *(d + 2) = cvImage.at<cv::Vec3b>(mj, i)[0];
+                *d++ = cvImage.at<cv::Vec3b>(mj, i)[2];
+                *d++ = cvImage.at<cv::Vec3b>(mj, i)[1];
+                *d++ = cvImage.at<cv::Vec3b>(mj, i)[0];
             }
         }
     }
     if (channels == 1)
     {
-        for(int i = 0; i < cvImage.cols; ++i)
+        for(int j = 0; j < cvImage.rows; ++j)
         {
-            for(int j = 0; j < cvImage.rows; ++j)
+            int mj = cvImage.rows - 1 - j;
+            for(int i = 0; i < cvImage.cols; ++i)
             {
-                int mj = cvImage.rows - 1 - j;
-                unsigned char* d = reinterpret_cast<unsigned char*> (m_imageData->GetScalarPointer(i, j, 0));
-                *d = cvImage.at<uchar>(mj, i);
+                *d++ = cvImage.at<uchar>(mj, i);
             }
         }
     }
 
-    m_imageData->Modified();
+    m_imageData = retVal;
 }
 
 void ViewportVTKWidget::convertTovtkImageData2(const cv::Mat &cvImage)
