@@ -1,13 +1,15 @@
-#include "imagecontrols.h"
-#include "ui_imagecontrols.h"
+#include "imagecontrols2.h"
+#include "ui_imagecontrols2.h"
 #include "viewport.h"
+#include "viewportcontroller.h"
 
 #include <QtMultimedia/QCameraInfo>
 
-ImageControls::ImageControls(QWidget *parent) :
+ImageControls2::ImageControls2(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::ImageControls),
-    m_imageViewPort(nullptr),
+    ui(new Ui::ImageControls2),
+    //m_imageViewPort(nullptr),
+    m_controller(nullptr),
     m_brightness(0),
     m_contrast(1.0)
 {
@@ -17,22 +19,17 @@ ImageControls::ImageControls(QWidget *parent) :
     listCameras();
 }
 
-ImageControls::~ImageControls()
+ImageControls2::~ImageControls2()
 {
 
 }
 
-void ImageControls::setImageViewPort(ViewPort *imageViewPort)
+void ImageControls2::setController(ViewportController *controller)
 {
-    m_imageViewPort = imageViewPort;
-    bool b = connect(imageViewPort, &ViewPort::resetControls, this, &ImageControls::onReset);
-    Q_ASSERT(b);
-    connect(this, &ImageControls::showCamera, m_imageViewPort, &ViewPort::showCamera);
-    connect(this, &ImageControls::cameraIndexChanged, m_imageViewPort, &ViewPort::setCameraIndex);
-    m_imageViewPort->setCameraIndex(m_cameraIndex);
+    m_controller = controller;
 }
 
-void ImageControls::onSliderValueChanged(int value)
+void ImageControls2::onSliderValueChanged(int value)
 {
     QObject* sender = this->sender();
     bool transformImage = false;
@@ -48,13 +45,9 @@ void ImageControls::onSliderValueChanged(int value)
         ui->groupContrast->setTitle(QString("Contrast %1").arg(m_contrast));
         transformImage = true;
     }
-    if(transformImage && m_imageViewPort != nullptr)
-    {
-        m_imageViewPort->changeBrightnessContrast(m_brightness, m_contrast);
-    }
 }
 
-void ImageControls::onReset()
+void ImageControls2::onReset()
 {
     m_brightness = 0;
     m_contrast = 1.0;
@@ -62,28 +55,41 @@ void ImageControls::onReset()
     ui->sliderContrast->setValue(100);
 }
 
-int ImageControls::selectedCamera()
+int ImageControls2::selectedCamera()
 {
     return m_cameraIndex;
 }
 
-void ImageControls::on_cameraList_currentIndexChanged(int index)
+void ImageControls2::on_cameraList_currentIndexChanged(int index)
 {
     m_cameraIndex = index;
     if(!ui->cameraShow->isEnabled() && index >= 0)
     {
         ui->cameraShow->setEnabled(true);
     }
-    emit cameraIndexChanged(index);
+
+    if(m_controller != nullptr)
+    {
+        m_controller->openCamera(index);
+    }
 }
 
-void ImageControls::on_cameraShow_stateChanged(int arg1)
+void ImageControls2::on_cameraShow_stateChanged(int arg1)
 {
     bool b = arg1 == Qt::Checked;
-    emit showCamera(b);
+
+    if(b)
+    {
+        int index = ui->cameraList->currentIndex();
+        m_controller->openCamera(index);
+    }
+    else
+    {
+        m_controller->closeCamera();
+    }
 }
 
-void ImageControls::listCameras()
+void ImageControls2::listCameras()
 {
     QList<QCameraInfo> cameras = QCameraInfo::availableCameras();
     foreach(const QCameraInfo &camera, cameras)

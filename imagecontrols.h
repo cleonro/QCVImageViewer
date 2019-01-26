@@ -1,5 +1,5 @@
-#ifndef IMAGE_CONTROLS_H
-#define IMAGE_CONTROLS_H
+#ifndef _IMAGE_CONTROLS_H_
+#define _IMAGE_CONTROLS_H_
 
 #include <QWidget>
 
@@ -8,7 +8,6 @@ class ImageControls;
 }
 
 class ViewPort;
-class ViewportController;
 
 //http://docs.opencv.org/doc/tutorials/core/basic_linear_transform/basic_linear_transform.html
 //http://opencv-srf.blogspot.ro/2013/07/change-brightness.html
@@ -22,14 +21,12 @@ public:
     ImageControls(QWidget* parent = nullptr);
     ~ImageControls();
 
-    //void setImageViewPort(ViewPort* imageViewPort);
+    void setImageViewPort(ViewPort* imageViewPort);
     int selectedCamera();
 
-    void setController(ViewportController *controller);
-
 signals:
-    //void showCamera(bool);
-    //void cameraIndexChanged(int);
+    void showCamera(bool);
+    void cameraIndexChanged(int);
 
 private slots:
     void onSliderValueChanged(int value);
@@ -44,8 +41,7 @@ private:
 
 private:
     Ui::ImageControls* ui;
-    //ViewPort*   m_imageViewPort;
-    ViewportController *m_controller;
+    ViewPort*   m_imageViewPort;
 
     int         m_brightness;
     float       m_contrast;
@@ -53,4 +49,4 @@ private:
     int m_cameraIndex;
 };
 
-#endif //_IMAGE_CONTROLS_H
+#endif //_IMAGE_CONTROLS_H_

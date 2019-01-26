@@ -74,8 +74,10 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 set(SRCS 
 		main.cpp 
 		mainwindow.h mainwindow.cpp
+                mainwindow2.h mainwindow2.cpp
 		viewport.h viewport.cpp
 		imagecontrols.h imagecontrols.cpp
+                imagecontrols2.h imagecontrols2.cpp
                 viewportbase.h viewportbase.cpp
                 viewportopengl.h viewportopengl.cpp
                 viewportsourcebase.h viewportsourcebase.cpp
@@ -86,7 +88,9 @@ set(SRCS
 set(HDRS )
 set(FRMS 
 	mainwindow.ui
+        mainwindow2.ui
 	imagecontrols.ui
+        imagecontrols2.ui
 	)
 set(RCS
         resource.qrc
