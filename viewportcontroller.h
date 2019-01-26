@@ -33,6 +33,8 @@ public:
     void openCamera(int cameraIndex);
     void closeCamera();
 
+    bool openImageFile(QString& fileName);
+
 private slots:
     void onImageChanged(const cv::Mat &cvImage);
 

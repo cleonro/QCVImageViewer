@@ -38,20 +38,20 @@ MainWindow2::~MainWindow2()
 
 void MainWindow2::onOpenActionTriggered()
 {
-//    QString imageFileName;// = QFileDialog::getOpenFileName(this, tr("Open Image File"), QDir::currentPath(), tr("Images (*.png *.xpm *.jpg)"));
-//    if(m_fileDialog->exec())
-//    {
-//        imageFileName = m_fileDialog->selectedFiles().first();
-//    }
-//    if(!imageFileName.isEmpty())
-//    {
-//        bool fileOpened = m_viewPort->openImageFile(imageFileName);
-//        if(fileOpened)
-//        {
-//            QString windowTitle = QFileInfo(imageFileName).fileName();
-//            setWindowTitle(windowTitle);
-//        }
-//    }
+    QString imageFileName;// = QFileDialog::getOpenFileName(this, tr("Open Image File"), QDir::currentPath(), tr("Images (*.png *.xpm *.jpg)"));
+    if(m_fileDialog->exec())
+    {
+        imageFileName = m_fileDialog->selectedFiles().first();
+    }
+    if(!imageFileName.isEmpty())
+    {
+        bool fileOpened = m_controller->openImageFile(imageFileName);
+        if(fileOpened)
+        {
+            QString windowTitle = QFileInfo(imageFileName).fileName();
+            setWindowTitle(windowTitle);
+        }
+    }
 }
 
 void MainWindow2::addControlWidgets()

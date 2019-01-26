@@ -2,6 +2,7 @@
 #include "viewportopengl.h"
 #include "viewportvtk.h"
 #include "viewportsourcecamera.h"
+#include "viewportsourcefile.h"
 
 ViewportController::ViewportController(QWidget *parent)
     : QObject(parent)
@@ -46,7 +47,7 @@ void ViewportController::openCamera(int cameraIndex)
     m_viewportSource = new ViewportSourceCamera(this);
     connect(m_viewportSource, &ViewportSourceBase::imageChanged, this, &ViewportController::onImageChanged);
     int ci = cameraIndex;
-    m_viewportSource->open((void*)(&ci));
+    m_viewportSource->open(static_cast<void*>(&ci));
 }
 
 void ViewportController::onImageChanged(const cv::Mat &cvImage)
@@ -62,4 +63,14 @@ void ViewportController::closeCamera()
         delete m_viewportSource;
         m_viewportSource = nullptr;
     }
+}
+
+bool ViewportController::openImageFile(QString &fileName)
+{
+    delete m_viewportSource;
+    m_viewportSource = new ViewportSourceFile(this);
+    connect(m_viewportSource, &ViewportSourceBase::imageChanged, this, &ViewportController::onImageChanged);
+    m_viewportSource->open(&fileName);
+
+    return true;
 }
