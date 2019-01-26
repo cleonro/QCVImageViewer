@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 
+#define USE_VTK 1
+
 namespace Ui {
 class MainWindow2;
 }

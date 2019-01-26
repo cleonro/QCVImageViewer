@@ -19,8 +19,12 @@ MainWindow2::MainWindow2(QWidget *parent) :
     Q_ASSERT(b);
 
     m_controller = new ViewportController(this);
-    //this->setCentralWidget(m_controller->initViewport(ViewportController::OPENGL));
+#if USE_VTK
     this->setCentralWidget(m_controller->initViewport(ViewportController::VTK));
+#else
+    this->setCentralWidget(m_controller->initViewport(ViewportController::OPENGL));
+#endif //USE_VTK
+
 
     addControlWidgets();
     setWindowTitle("QCVImageViewer");

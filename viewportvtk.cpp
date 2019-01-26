@@ -18,10 +18,11 @@ class ViewportVTKWidget : public QVTKOpenGLNativeWidget
     friend class ViewportVTK;
 public:
     ViewportVTKWidget(QWidget *parent = nullptr);
-    ~ViewportVTKWidget();
+    ~ViewportVTKWidget() override;
 
 protected:
-    void resizeGL(int width, int height);
+    void initializeGL() override;
+    void resizeGL(int width, int height) override;
 
 private:
     void addImage(const cv::Mat &cvImage);
@@ -183,6 +184,11 @@ void ViewportVTKWidget::convertTovtkImageData2(const cv::Mat &cvImage)
     }
 
     m_imageData = retval;
+}
+
+void ViewportVTKWidget::initializeGL()
+{
+    QVTKOpenGLNativeWidget::initializeGL();
 }
 
 void ViewportVTKWidget::resizeGL(int width, int height)
