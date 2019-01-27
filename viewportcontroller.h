@@ -30,7 +30,7 @@ public:
     QWidget *initViewport(const ViewportType& type);
     QWidget *viewport();
 
-    void openCamera(int cameraIndex);
+    bool openCamera(int cameraIndex);
     void closeCamera();
 
     bool openImageFile(QString& fileName);

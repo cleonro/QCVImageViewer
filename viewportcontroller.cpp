@@ -39,7 +39,7 @@ QWidget *ViewportController::initViewport(const ViewportController::ViewportType
     return viewport();
 }
 
-void ViewportController::openCamera(int cameraIndex)
+bool ViewportController::openCamera(int cameraIndex)
 {
     Q_ASSERT(m_viewport != nullptr);
     delete m_viewportSource;
@@ -48,6 +48,8 @@ void ViewportController::openCamera(int cameraIndex)
     connect(m_viewportSource, &ViewportSourceBase::imageChanged, this, &ViewportController::onImageChanged);
     int ci = cameraIndex;
     m_viewportSource->open(static_cast<void*>(&ci));
+
+    return true;
 }
 
 void ViewportController::onImageChanged(const cv::Mat &cvImage)

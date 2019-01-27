@@ -68,9 +68,17 @@ void ImageControls2::on_cameraList_currentIndexChanged(int index)
         ui->cameraShow->setEnabled(true);
     }
 
-    if(m_controller != nullptr)
+    if(ui->cameraShow->isEnabled() && m_controller != nullptr)
     {
-        m_controller->openCamera(index);
+        if(m_controller->openCamera(index))
+        {
+            QWidget *w = this->parentWidget();
+            QString t = ui->cameraList->currentText();
+            if(w != nullptr)
+            {
+                w->setWindowTitle(t);
+            }
+        }
     }
 }
 
