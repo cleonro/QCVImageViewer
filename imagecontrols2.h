@@ -21,6 +21,12 @@ public:
 
     void setController(ViewportController *controller);
 
+signals:
+    void cameraOpened(QString cameraTitle);
+
+public slots:
+    void onImageFileOpened();
+
 private slots:
     void onSliderValueChanged(int value);
     void onReset();

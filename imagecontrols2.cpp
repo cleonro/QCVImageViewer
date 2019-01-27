@@ -72,12 +72,8 @@ void ImageControls2::on_cameraList_currentIndexChanged(int index)
     {
         if(m_controller->openCamera(index))
         {
-            QWidget *w = this->parentWidget();
             QString t = ui->cameraList->currentText();
-            if(w != nullptr)
-            {
-                w->setWindowTitle(t);
-            }
+            emit cameraOpened(t);
         }
     }
 }
@@ -89,7 +85,11 @@ void ImageControls2::on_cameraShow_stateChanged(int arg1)
     if(b)
     {
         int index = ui->cameraList->currentIndex();
-        m_controller->openCamera(index);
+        if(m_controller->openCamera(index))
+        {
+            QString t = ui->cameraList->currentText();
+            emit cameraOpened(t);
+        }
     }
     else
     {
@@ -105,4 +105,9 @@ void ImageControls2::listCameras()
         QString cameraName = camera.description();
         ui->cameraList->addItem(cameraName);
     }
+}
+
+void ImageControls2::onImageFileOpened()
+{
+    ui->cameraShow->setChecked(false);
 }

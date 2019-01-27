@@ -54,6 +54,7 @@ void MainWindow2::onOpenActionTriggered()
         {
             QString windowTitle = QFileInfo(imageFileName).fileName();
             setWindowTitle(windowTitle);
+            emit imageFileOpened(imageFileName);
         }
     }
 }
@@ -62,6 +63,8 @@ void MainWindow2::addControlWidgets()
 {
     QDockWidget* dock = new QDockWidget(tr("Image Controls"), this);
     ImageControls2* controls = new ImageControls2(this);
+    connect(controls, &ImageControls2::cameraOpened, this, &MainWindow2::onCameraOpened);
+    connect(this, &MainWindow2::imageFileOpened, controls, &ImageControls2::onImageFileOpened);
     controls->setController(m_controller);
     dock->setWidget(controls);
 
@@ -70,4 +73,9 @@ void MainWindow2::addControlWidgets()
     dock->hide();
 
     ui->menuWindow->addAction(dock->toggleViewAction());
+}
+
+void MainWindow2::onCameraOpened(const QString &cameraTitle)
+{
+    this->setWindowTitle(cameraTitle);
 }

@@ -21,8 +21,12 @@ public:
     explicit MainWindow2(QWidget *parent = nullptr);
     ~MainWindow2();
 
+signals:
+    void imageFileOpened(QString filePath);
+
 private slots:
     void onOpenActionTriggered();
+    void onCameraOpened(const QString &cameraTitle);
 
 private:
     void addControlWidgets();
