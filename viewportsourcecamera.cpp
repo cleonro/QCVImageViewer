@@ -64,3 +64,8 @@ void ViewportSourceCamera::takeImage()
     }
     emit imageChanged(m_cvImage);
 }
+
+void *ViewportSourceCamera::source()
+{
+    return &m_videoCapture;
+}

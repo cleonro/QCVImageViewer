@@ -3,13 +3,20 @@
 
 #include <opencv2/highgui.hpp>
 
+#include <QVector>
 #include <QObject>
 
 class ViewportBase;
 class ViewportSourceBase;
+class FilterBase;
 
 class ViewportController : public QObject
 {
+    enum FILTERS {
+        INFO = 0,
+        COUNT = 1
+    };
+
     Q_OBJECT
 public:
     enum ViewportType
@@ -42,6 +49,7 @@ private:
     QWidget *m_parent;
     ViewportBase *m_viewport;
     ViewportSourceBase *m_viewportSource;
+    QVector<FilterBase*> m_filters;
 };
 
 #endif //VIEWPORT_CONTROLLER_H

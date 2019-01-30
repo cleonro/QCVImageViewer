@@ -15,8 +15,10 @@ public:
     virtual void open(void *source);
     virtual void close();
 
+    virtual void* source();
+
 signals:
-    void imageChanged(const cv::Mat &cvImage);
+    void imageChanged(cv::Mat &cvImage);
 
 private:
 

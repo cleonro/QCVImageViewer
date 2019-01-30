@@ -3,6 +3,7 @@
 #include "viewportvtk.h"
 #include "viewportsourcecamera.h"
 #include "viewportsourcefile.h"
+#include "filterinfo.h"
 
 ViewportController::ViewportController(QWidget *parent)
     : QObject(parent)
@@ -26,7 +27,13 @@ QWidget *ViewportController::viewport()
 QWidget *ViewportController::initViewport(const ViewportController::ViewportType& type)
 {
     delete m_viewport;
+    foreach(FilterBase *filter, m_filters)
+    {
+        delete filter;
+    }
+    m_filters.clear();
 
+    //viewport
     switch (type)
     {
         case OPENGL:
@@ -36,18 +43,43 @@ QWidget *ViewportController::initViewport(const ViewportController::ViewportType
             m_viewport = new ViewportVTK(m_parent);
     }
 
+    //filters
+    m_filters.resize(FILTERS::COUNT);
+    FilterBase *filterInfo = new FilterInfo(this);
+    m_filters[FILTERS::INFO] = filterInfo;
+
+    for(int i = 0; i < m_filters.size() - 1; ++i)
+    {
+        connect(m_filters[i], &FilterBase::imageReady, m_filters[i + 1], &FilterBase::addImage);
+    }
+    connect(m_filters[FILTERS::COUNT - 1], &FilterBase::imageReady, this, &ViewportController::onImageChanged);
+
+
     return viewport();
 }
 
 bool ViewportController::openCamera(int cameraIndex)
 {
-    Q_ASSERT(m_viewport != nullptr);
     delete m_viewportSource;
+    ViewportSourceCamera *sourceCamera = new ViewportSourceCamera(this);
+    m_viewportSource = sourceCamera;
 
-    m_viewportSource = new ViewportSourceCamera(this);
-    connect(m_viewportSource, &ViewportSourceBase::imageChanged, this, &ViewportController::onImageChanged);
+    if(m_filters.size() == 0)
+    {
+        connect(m_viewportSource, &ViewportSourceBase::imageChanged, this, &ViewportController::onImageChanged);
+    }
+    else
+    {
+        connect(m_viewportSource, &ViewportSourceBase::imageChanged, m_filters[0], &FilterBase::addImage);
+        //m_filters[FILTERS::INFO]->setData(sourceCamera->source());
+    }
+
     int ci = cameraIndex;
     m_viewportSource->open(static_cast<void*>(&ci));
+    if(m_filters.size() > 0)
+    {
+        m_filters[FILTERS::INFO]->setData(sourceCamera->source());
+    }
 
     return true;
 }
@@ -71,7 +103,17 @@ bool ViewportController::openImageFile(QString &fileName)
 {
     delete m_viewportSource;
     m_viewportSource = new ViewportSourceFile(this);
-    connect(m_viewportSource, &ViewportSourceBase::imageChanged, this, &ViewportController::onImageChanged);
+
+    if(m_filters.size() == 0)
+    {
+        connect(m_viewportSource, &ViewportSourceBase::imageChanged, this, &ViewportController::onImageChanged);
+    }
+    else
+    {
+        connect(m_viewportSource, &ViewportSourceBase::imageChanged, m_filters[0], &FilterBase::addImage);
+        m_filters[FILTERS::INFO]->setData(nullptr);
+    }
+
     m_viewportSource->open(&fileName);
 
     return true;

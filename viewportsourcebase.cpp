@@ -20,3 +20,8 @@ void ViewportSourceBase::close()
 {
 
 }
+
+void *ViewportSourceBase::source()
+{
+    return nullptr;
+}

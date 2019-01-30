@@ -8,10 +8,10 @@ class ViewportSourceFile : public ViewportSourceBase
     Q_OBJECT
 public:
     ViewportSourceFile(QObject *parent = nullptr);
-    ~ViewportSourceFile();
+    ~ViewportSourceFile() override;
 
-    void open(void *source);
-    void close();
+    void open(void *source) override;
+    void close() override;
 
 private:
     cv::Mat m_cvImage;

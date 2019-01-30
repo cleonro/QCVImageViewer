@@ -12,10 +12,12 @@ class ViewportSourceCamera : public ViewportSourceBase
     Q_OBJECT
 public:
     ViewportSourceCamera(QObject *parent = nullptr);
-    ~ViewportSourceCamera();
+    ~ViewportSourceCamera() override;
 
-    void open(void *source);
-    void close();
+    void open(void *source) override;
+    void close() override;
+
+    void* source() override;
 
 private slots:
     void onTimer();
