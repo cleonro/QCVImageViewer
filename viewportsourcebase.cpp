@@ -25,3 +25,8 @@ void *ViewportSourceBase::source()
 {
     return nullptr;
 }
+
+void ViewportSourceBase::resend()
+{
+
+}

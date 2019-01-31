@@ -13,8 +13,9 @@ class FilterBase;
 class ViewportController : public QObject
 {
     enum FILTERS {
-        INFO = 0,
-        COUNT = 1
+        BRIGHTNESS_CONTRAST = 0,
+        INFO = 1,
+        COUNT = 2
     };
 
     Q_OBJECT
@@ -37,6 +38,8 @@ public:
     QWidget *initViewport(const ViewportType& type);
     QWidget *viewport();
 
+    void setBrightnessContrast(const double &brightness, const double &contrast);
+
     bool openCamera(int cameraIndex);
     void closeCamera();
 
@@ -50,6 +53,7 @@ private:
     ViewportBase *m_viewport;
     ViewportSourceBase *m_viewportSource;
     QVector<FilterBase*> m_filters;
+    double m_brigtnessContrast[2];
 };
 
 #endif //VIEWPORT_CONTROLLER_H

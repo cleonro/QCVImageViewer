@@ -4,6 +4,7 @@
 #include "viewportsourcecamera.h"
 #include "viewportsourcefile.h"
 #include "filterinfo.h"
+#include "filterbc.h"
 
 ViewportController::ViewportController(QWidget *parent)
     : QObject(parent)
@@ -11,6 +12,8 @@ ViewportController::ViewportController(QWidget *parent)
 {
     m_viewport = nullptr;
     m_viewportSource = nullptr;
+    m_brigtnessContrast[0] = 0.0;
+    m_brigtnessContrast[1] = 1.0;
 }
 
 ViewportController::~ViewportController()
@@ -45,8 +48,11 @@ QWidget *ViewportController::initViewport(const ViewportController::ViewportType
 
     //filters
     m_filters.resize(FILTERS::COUNT);
-    FilterBase *filterInfo = new FilterInfo(this);
-    m_filters[FILTERS::INFO] = filterInfo;
+    FilterBase *filter = new FilterInfo(this);
+    m_filters[FILTERS::INFO] = filter;
+    filter = new FilterBC(this);
+    m_filters[FILTERS::BRIGHTNESS_CONTRAST] = filter;
+
 
     for(int i = 0; i < m_filters.size() - 1; ++i)
     {
@@ -79,6 +85,7 @@ bool ViewportController::openCamera(int cameraIndex)
     if(m_filters.size() > 0)
     {
         m_filters[FILTERS::INFO]->setData(sourceCamera->source());
+        m_filters[FILTERS::BRIGHTNESS_CONTRAST]->setData(m_brigtnessContrast);
     }
 
     return true;
@@ -94,8 +101,9 @@ void ViewportController::closeCamera()
 {
     if(dynamic_cast<ViewportSourceCamera*>(m_viewportSource) != nullptr)
     {
-        delete m_viewportSource;
-        m_viewportSource = nullptr;
+//        delete m_viewportSource;
+//        m_viewportSource = nullptr;
+        m_viewportSource->close();
     }
 }
 
@@ -112,9 +120,25 @@ bool ViewportController::openImageFile(QString &fileName)
     {
         connect(m_viewportSource, &ViewportSourceBase::imageChanged, m_filters[0], &FilterBase::addImage);
         m_filters[FILTERS::INFO]->setData(nullptr);
+        m_filters[FILTERS::BRIGHTNESS_CONTRAST]->setData(m_brigtnessContrast);
     }
 
     m_viewportSource->open(&fileName);
 
     return true;
+}
+
+void ViewportController::setBrightnessContrast(const double &brightness, const double &contrast)
+{
+    m_brigtnessContrast[0] = brightness;
+    m_brigtnessContrast[1] = contrast;
+
+    if(m_filters.size() > 0)
+    {
+        m_filters[FILTERS::BRIGHTNESS_CONTRAST]->setData(m_brigtnessContrast);
+        if(m_viewportSource != nullptr)
+        {
+            m_viewportSource->resend();
+        }
+    }
 }

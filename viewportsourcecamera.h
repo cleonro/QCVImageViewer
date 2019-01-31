@@ -18,6 +18,7 @@ public:
     void close() override;
 
     void* source() override;
+    virtual void resend() override;
 
 private slots:
     void onTimer();
@@ -31,6 +32,7 @@ private:
     int m_cameraIndex;
     cv::VideoCapture m_videoCapture;
     cv::Mat m_cvImage;
+    cv::Mat m_cvImageCopy;
 };
 
 #endif //VIEWPORT_SOURCE_CAMERA_H

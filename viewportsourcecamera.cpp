@@ -33,6 +33,7 @@ void ViewportSourceCamera::close()
     m_videoCapture.release();
     m_cameraIndex = -1;
     m_timer.stop();
+    m_cvImage.copyTo(m_cvImageCopy);
 }
 
 void ViewportSourceCamera::onTimer()
@@ -68,4 +69,15 @@ void ViewportSourceCamera::takeImage()
 void *ViewportSourceCamera::source()
 {
     return &m_videoCapture;
+}
+
+void ViewportSourceCamera::resend()
+{
+    if(m_timer.isActive())
+    {
+        return;
+    }
+
+    m_cvImageCopy.copyTo(m_cvImage);
+    emit imageChanged(m_cvImage);
 }

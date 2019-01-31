@@ -42,8 +42,8 @@ private:
     Ui::ImageControls2* ui;
     ViewportController *m_controller;
 
-    int         m_brightness;
-    float       m_contrast;
+    double         m_brightness;
+    double       m_contrast;
 
     int m_cameraIndex;
 };

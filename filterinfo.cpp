@@ -20,6 +20,7 @@ void FilterInfo::setData(void *data)
     {
         this->setActive(false);
         m_info.clear();
+        return;
     }
 
     cv::VideoCapture &videoCapture = *static_cast<cv::VideoCapture*>(data);

@@ -45,6 +45,10 @@ void ImageControls2::onSliderValueChanged(int value)
         ui->groupContrast->setTitle(QString("Contrast %1").arg(m_contrast));
         transformImage = true;
     }
+    if(transformImage)
+    {
+        m_controller->setBrightnessContrast(m_brightness, m_contrast);
+    }
 }
 
 void ImageControls2::onReset()
@@ -53,6 +57,8 @@ void ImageControls2::onReset()
     m_contrast = 1.0;
     ui->sliderBrightness->setValue(0);
     ui->sliderContrast->setValue(100);
+
+    m_controller->setBrightnessContrast(m_brightness, m_contrast);
 }
 
 int ImageControls2::selectedCamera()

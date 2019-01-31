@@ -16,6 +16,7 @@ public:
     virtual void close();
 
     virtual void* source();
+    virtual void resend();
 
 signals:
     void imageChanged(cv::Mat &cvImage);

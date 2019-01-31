@@ -87,6 +87,7 @@ set(SRCS
                 viewportsourcefile.h viewportsourcefile.cpp
                 filterbase.h filterbase.cpp
                 filterinfo.h filterinfo.cpp
+                filterbc.h filterbc.cpp
 	)
 set(HDRS )
 set(FRMS 
