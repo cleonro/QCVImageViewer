@@ -27,3 +27,5 @@ ipch*/
 start.bat
 .directory
 *.pyc
+.DS_Store
+

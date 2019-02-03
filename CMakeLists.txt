@@ -88,6 +88,7 @@ set(SRCS
                 filterbase.h filterbase.cpp
                 filterinfo.h filterinfo.cpp
                 filterbc.h filterbc.cpp
+                filterfr.h filterfr.cpp
 	)
 set(HDRS )
 set(FRMS 

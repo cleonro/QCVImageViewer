@@ -14,8 +14,9 @@ class ViewportController : public QObject
 {
     enum FILTERS {
         BRIGHTNESS_CONTRAST = 0,
-        INFO = 1,
-        COUNT = 2
+        FACE_RECOGNITION = 1,
+        INFO = 2,
+        COUNT = 3
     };
 
     Q_OBJECT

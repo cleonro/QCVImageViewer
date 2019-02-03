@@ -5,6 +5,7 @@
 #include "viewportsourcefile.h"
 #include "filterinfo.h"
 #include "filterbc.h"
+#include "filterfr.h"
 
 ViewportController::ViewportController(QWidget *parent)
     : QObject(parent)
@@ -52,6 +53,8 @@ QWidget *ViewportController::initViewport(const ViewportController::ViewportType
     m_filters[FILTERS::INFO] = filter;
     filter = new FilterBC(this);
     m_filters[FILTERS::BRIGHTNESS_CONTRAST] = filter;
+    filter = new FilterFR(this);
+    m_filters[FILTERS::FACE_RECOGNITION] = filter;
 
 
     for(int i = 0; i < m_filters.size() - 1; ++i)
@@ -86,6 +89,7 @@ bool ViewportController::openCamera(int cameraIndex)
     {
         m_filters[FILTERS::INFO]->setData(sourceCamera->source());
         m_filters[FILTERS::BRIGHTNESS_CONTRAST]->setData(m_brigtnessContrast);
+        m_filters[FILTERS::FACE_RECOGNITION]->setActive(true);
     }
 
     return true;
@@ -121,6 +125,7 @@ bool ViewportController::openImageFile(QString &fileName)
         connect(m_viewportSource, &ViewportSourceBase::imageChanged, m_filters[0], &FilterBase::addImage);
         m_filters[FILTERS::INFO]->setData(nullptr);
         m_filters[FILTERS::BRIGHTNESS_CONTRAST]->setData(m_brigtnessContrast);
+        m_filters[FILTERS::FACE_RECOGNITION]->setActive(false);
     }
 
     m_viewportSource->open(&fileName);
