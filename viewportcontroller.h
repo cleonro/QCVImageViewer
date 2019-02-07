@@ -12,6 +12,9 @@ class FilterBase;
 
 class ViewportController : public QObject
 {
+    Q_OBJECT
+
+public:
     enum FILTERS {
         BRIGHTNESS_CONTRAST = 0,
         FACE_RECOGNITION = 1,
@@ -19,7 +22,6 @@ class ViewportController : public QObject
         COUNT = 3
     };
 
-    Q_OBJECT
 public:
     enum ViewportType
     {
@@ -45,6 +47,11 @@ public:
     void closeCamera();
 
     bool openImageFile(QString& fileName);
+
+    void setFilterActive(const int &index, const bool &active);
+
+signals:
+    void filterStateChanged(QVector<bool> state);
 
 private slots:
     void onImageChanged(const cv::Mat &cvImage);

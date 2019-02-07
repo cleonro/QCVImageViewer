@@ -16,14 +16,14 @@ void FilterBC::setData(void *data)
 {
     if(data == nullptr)
     {
-        this->setActive(false);
+        //this->setActive(false);
         return;
     }
 
     double *bc = static_cast<double*>(data);
     m_brightness = bc[0];
     m_contrast = bc[1];
-    this->setActive(true);
+    //this->setActive(true);
 }
 
 void FilterBC::addImage(cv::Mat &image)

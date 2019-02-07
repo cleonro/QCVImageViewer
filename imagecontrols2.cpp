@@ -27,6 +27,12 @@ ImageControls2::~ImageControls2()
 void ImageControls2::setController(ViewportController *controller)
 {
     m_controller = controller;
+    m_filters.clear();
+    m_filters.resize(ViewportController::COUNT);
+    m_filters[ViewportController::FILTERS::BRIGHTNESS_CONTRAST] = ui->cbBC;
+    m_filters[ViewportController::FILTERS::FACE_RECOGNITION] = ui->cbFR;
+    m_filters[ViewportController::FILTERS::INFO] = ui->cbInfo;
+    connect(m_controller, &ViewportController::filterStateChanged, this, &ImageControls2::onFilterStateChanged);
 }
 
 void ImageControls2::onSliderValueChanged(int value)
@@ -116,4 +122,30 @@ void ImageControls2::listCameras()
 void ImageControls2::onImageFileOpened()
 {
     ui->cameraShow->setChecked(false);
+}
+
+void ImageControls2::on_cbBC_toggled(bool checked)
+{
+    m_controller->setFilterActive(ViewportController::BRIGHTNESS_CONTRAST, checked);
+}
+
+void ImageControls2::on_cbFR_toggled(bool checked)
+{
+    m_controller->setFilterActive(ViewportController::FACE_RECOGNITION, checked);
+}
+
+void ImageControls2::on_cbInfo_toggled(bool checked)
+{
+    m_controller->setFilterActive(ViewportController::INFO, checked);
+}
+
+void ImageControls2::onFilterStateChanged(QVector<bool> state)
+{
+    for(int i = 0; i < ViewportController::COUNT; ++i)
+    {
+        m_filters[i]->blockSignals(true);
+        m_filters[i]->setEnabled(state[i]);
+        m_filters[i]->setChecked(state[i]);
+        m_filters[i]->blockSignals(false);
+    }
 }

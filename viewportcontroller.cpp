@@ -87,9 +87,17 @@ bool ViewportController::openCamera(int cameraIndex)
     m_viewportSource->open(static_cast<void*>(&ci));
     if(m_filters.size() > 0)
     {
+        m_filters[FILTERS::INFO]->setActive(true);
+        m_filters[FILTERS::BRIGHTNESS_CONTRAST]->setActive(true);
+        m_filters[FILTERS::FACE_RECOGNITION]->setActive(true);
         m_filters[FILTERS::INFO]->setData(sourceCamera->source());
         m_filters[FILTERS::BRIGHTNESS_CONTRAST]->setData(m_brigtnessContrast);
-        m_filters[FILTERS::FACE_RECOGNITION]->setActive(true);
+        QVector<bool> state;
+        state.resize(COUNT);
+        state[BRIGHTNESS_CONTRAST] = true;
+        state[FACE_RECOGNITION] = true;
+        state[INFO] = true;
+        emit filterStateChanged(state);
     }
 
     return true;
@@ -123,9 +131,16 @@ bool ViewportController::openImageFile(QString &fileName)
     else
     {
         connect(m_viewportSource, &ViewportSourceBase::imageChanged, m_filters[0], &FilterBase::addImage);
-        m_filters[FILTERS::INFO]->setData(nullptr);
-        m_filters[FILTERS::BRIGHTNESS_CONTRAST]->setData(m_brigtnessContrast);
+        m_filters[FILTERS::INFO]->setActive(false);
+        m_filters[FILTERS::BRIGHTNESS_CONTRAST]->setActive(true);
         m_filters[FILTERS::FACE_RECOGNITION]->setActive(false);
+        m_filters[FILTERS::BRIGHTNESS_CONTRAST]->setData(m_brigtnessContrast);
+        QVector<bool> state;
+        state.resize(COUNT);
+        state[BRIGHTNESS_CONTRAST] = true;
+        state[FACE_RECOGNITION] = false;
+        state[INFO] = false;
+        emit filterStateChanged(state);
     }
 
     m_viewportSource->open(&fileName);
@@ -146,4 +161,9 @@ void ViewportController::setBrightnessContrast(const double &brightness, const d
             m_viewportSource->resend();
         }
     }
+}
+
+void ViewportController::setFilterActive(const int &index, const bool &active)
+{
+    m_filters[index]->setActive(active);
 }
