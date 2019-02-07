@@ -46,7 +46,8 @@ public:
     bool openCamera(int cameraIndex);
     void closeCamera();
 
-    bool openImageFile(QString& fileName);
+    bool openImageFile(QString &fileName);
+    bool openMovieFile(QString &fileName);
 
     void setFilterActive(const int &index, const bool &active);
 

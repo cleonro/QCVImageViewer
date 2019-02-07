@@ -2,6 +2,7 @@
 #define MAIN_WINDOW2_H
 
 #include <QMainWindow>
+#include <QList>
 
 #define USE_VTK 1
 
@@ -36,6 +37,8 @@ private:
     ViewportController *m_controller;
 
     QFileDialog     *m_fileDialog;
+    QList<QString> m_imageExtensions;
+    QList<QString> m_movieExtensions;
 };
 
 #endif // MAIN_WINDOW2_H

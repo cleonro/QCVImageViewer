@@ -3,6 +3,7 @@
 #include "viewportvtk.h"
 #include "viewportsourcecamera.h"
 #include "viewportsourcefile.h"
+#include "viewportsourcemovie.h"
 #include "filterinfo.h"
 #include "filterbc.h"
 #include "filterfr.h"
@@ -144,6 +145,39 @@ bool ViewportController::openImageFile(QString &fileName)
     }
 
     m_viewportSource->open(&fileName);
+
+    return true;
+}
+
+bool ViewportController::openMovieFile(QString &fileName)
+{
+    delete m_viewportSource;
+    m_viewportSource = new ViewportSourceMovie(this);
+
+    if(m_filters.size() == 0)
+    {
+        connect(m_viewportSource, &ViewportSourceBase::imageChanged, this, &ViewportController::onImageChanged);
+    }
+    else
+    {
+        connect(m_viewportSource, &ViewportSourceBase::imageChanged, m_filters[0], &FilterBase::addImage);
+    }
+
+    m_viewportSource->open(static_cast<void*>(&fileName));
+    if(m_filters.size() > 0)
+    {
+        m_filters[FILTERS::INFO]->setActive(true);
+        m_filters[FILTERS::BRIGHTNESS_CONTRAST]->setActive(true);
+        m_filters[FILTERS::FACE_RECOGNITION]->setActive(false);
+        m_filters[FILTERS::INFO]->setData(m_viewportSource->source());
+        m_filters[FILTERS::BRIGHTNESS_CONTRAST]->setData(m_brigtnessContrast);
+        QVector<bool> state;
+        state.resize(COUNT);
+        state[BRIGHTNESS_CONTRAST] = true;
+        state[FACE_RECOGNITION] = false;
+        state[INFO] = true;
+        emit filterStateChanged(state);
+    }
 
     return true;
 }

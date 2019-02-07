@@ -31,7 +31,9 @@ MainWindow2::MainWindow2(QWidget *parent) :
 
     m_fileDialog = new QFileDialog(this, Qt::Dialog);
     m_fileDialog->setFileMode(QFileDialog::ExistingFile);
-    m_fileDialog->setNameFilter(tr("Images (*.png *.xpm *.jpg)"));
+    m_fileDialog->setNameFilter(tr("Images (*.png *.xpm *.jpg *.mpeg *.mp4 *.avi)"));
+    m_imageExtensions << "png" << "xpm" << "jpg";
+    m_movieExtensions << "mpeg" << "mp4" << "avi";
     m_fileDialog->setWindowTitle(tr("Open Image File"));
 }
 
@@ -42,19 +44,21 @@ MainWindow2::~MainWindow2()
 
 void MainWindow2::onOpenActionTriggered()
 {
-    QString imageFileName;// = QFileDialog::getOpenFileName(this, tr("Open Image File"), QDir::currentPath(), tr("Images (*.png *.xpm *.jpg)"));
+    QString fileName;// = QFileDialog::getOpenFileName(this, tr("Open Image File"), QDir::currentPath(), tr("Images (*.png *.xpm *.jpg)"));
     if(m_fileDialog->exec())
     {
-        imageFileName = m_fileDialog->selectedFiles().first();
+        fileName = m_fileDialog->selectedFiles().first();
     }
-    if(!imageFileName.isEmpty())
+    if(!fileName.isEmpty())
     {
-        bool fileOpened = m_controller->openImageFile(imageFileName);
+        QString extension = QFileInfo(fileName).completeSuffix();
+        bool isImage = m_imageExtensions.contains(extension);
+        bool fileOpened = isImage ? m_controller->openImageFile(fileName) : m_controller->openMovieFile(fileName);
         if(fileOpened)
         {
-            QString windowTitle = QFileInfo(imageFileName).fileName();
+            QString windowTitle = QFileInfo(fileName).fileName();
             setWindowTitle(windowTitle);
-            emit imageFileOpened(imageFileName);
+            emit imageFileOpened(fileName);
         }
     }
 }

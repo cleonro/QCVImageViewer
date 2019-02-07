@@ -89,6 +89,7 @@ set(SRCS
                 filterinfo.h filterinfo.cpp
                 filterbc.h filterbc.cpp
                 filterfr.h filterfr.cpp
+                viewportsourcemovie.h viewportsourcemovie.cpp
 	)
 set(HDRS )
 set(FRMS 
