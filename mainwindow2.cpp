@@ -31,9 +31,9 @@ MainWindow2::MainWindow2(QWidget *parent) :
 
     m_fileDialog = new QFileDialog(this, Qt::Dialog);
     m_fileDialog->setFileMode(QFileDialog::ExistingFile);
-    m_fileDialog->setNameFilter(tr("Images (*.png *.xpm *.jpg *.mpeg *.mp4 *.avi)"));
+    m_fileDialog->setNameFilter(tr("Images (*.png *.xpm *.jpg *.mpeg *.mpg *.mp4 *.avi)"));
     m_imageExtensions << "png" << "xpm" << "jpg";
-    m_movieExtensions << "mpeg" << "mp4" << "avi";
+    m_movieExtensions << "mpeg" << "mpg" << "mp4" << "avi";
     m_fileDialog->setWindowTitle(tr("Open Image File"));
 }
 
