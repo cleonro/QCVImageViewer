@@ -113,14 +113,18 @@ source_group("MOC" FILES ${MOC_SRCS})
 if(UNIX)
     include_directories(/opt/local/include)
     link_directories(/opt/local/lib)
+
+    include_directories(/usr/include/ffmpeg)
 endif(UNIX)
 
 add_executable(QCVImageViewer ${SRCS} ${FRMS_SRCS} ${MOC_SRCS} ${UI_RESOURCES})
 set_target_properties(QCVImageViewer PROPERTIES
 				RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 qt5_use_modules(QCVImageViewer Widgets OpenGL Multimedia)
-target_link_libraries(QCVImageViewer ${OPENGL_LIBRARIES} ${OpenCV_LIBS} ${VTK_LIBRARIES})
 
 if(UNIX)
-    target_link_libraries(QCVImageViewer avcodec avformat avutil)
+    target_link_libraries(QCVImageViewer avformat avcodec avutil)
 endif(UNIX)
+
+target_link_libraries(QCVImageViewer ${OPENGL_LIBRARIES} ${OpenCV_LIBS} ${VTK_LIBRARIES})
+

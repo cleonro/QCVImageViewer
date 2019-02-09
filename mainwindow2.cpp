@@ -8,6 +8,8 @@
 #include <QDockWidget>
 #include <QFileInfo>
 
+#include "ffmpegtest.h"
+
 MainWindow2::MainWindow2(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow2)
@@ -35,6 +37,10 @@ MainWindow2::MainWindow2(QWidget *parent) :
     m_imageExtensions << "png" << "xpm" << "jpg";
     m_movieExtensions << "mpeg" << "mpg" << "mp4" << "avi";
     m_fileDialog->setWindowTitle(tr("Open Image File"));
+
+    //ffmpeg test
+    m_ffmpeg = new FfmpegTest(this);
+    m_ffmpeg->init();
 }
 
 MainWindow2::~MainWindow2()

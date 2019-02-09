@@ -13,6 +13,7 @@ class MainWindow2;
 class QFileDialog;
 
 class ViewportController;
+class FfmpegTest;
 
 class MainWindow2 : public QMainWindow
 {
@@ -39,6 +40,8 @@ private:
     QFileDialog     *m_fileDialog;
     QList<QString> m_imageExtensions;
     QList<QString> m_movieExtensions;
+
+    FfmpegTest *m_ffmpeg;
 };
 
 #endif // MAIN_WINDOW2_H
