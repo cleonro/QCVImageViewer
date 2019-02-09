@@ -90,6 +90,7 @@ set(SRCS
                 filterbc.h filterbc.cpp
                 filterfr.h filterfr.cpp
                 viewportsourcemovie.h viewportsourcemovie.cpp
+                ffmpegtest.h ffmpegtest.cpp
 	)
 set(HDRS )
 set(FRMS 
@@ -109,8 +110,17 @@ source_group("Forms" FILES ${FRMS})
 source_group("Headers" FILES ${HDRS})
 source_group("MOC" FILES ${MOC_SRCS})
 
+if(UNIX)
+    include_directories(/opt/local/include)
+    link_directories(/opt/local/lib)
+endif(UNIX)
+
 add_executable(QCVImageViewer ${SRCS} ${FRMS_SRCS} ${MOC_SRCS} ${UI_RESOURCES})
 set_target_properties(QCVImageViewer PROPERTIES
 				RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 qt5_use_modules(QCVImageViewer Widgets OpenGL Multimedia)
 target_link_libraries(QCVImageViewer ${OPENGL_LIBRARIES} ${OpenCV_LIBS} ${VTK_LIBRARIES})
+
+if(UNIX)
+    target_link_libraries(QCVImageViewer avcodec avformat avutil)
+endif(UNIX)
