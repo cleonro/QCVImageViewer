@@ -110,21 +110,23 @@ source_group("Forms" FILES ${FRMS})
 source_group("Headers" FILES ${HDRS})
 source_group("MOC" FILES ${MOC_SRCS})
 
+message("Ffmpeg directory: " ${CMAKE_BINARY_DIR}/../../ffmpeg)
 if(UNIX)
     include_directories(/opt/local/include)
     link_directories(/opt/local/lib)
 
     include_directories(/usr/include/ffmpeg)
 endif(UNIX)
+if(WIN32)
+    include_directories(${CMAKE_BINARY_DIR}/../../ffmpeg/ffmpeg_dev/include)
+    link_directories(${CMAKE_BINARY_DIR}/../../ffmpeg/ffmpeg_dev/lib)
+endif(WIN32)
 
 add_executable(QCVImageViewer ${SRCS} ${FRMS_SRCS} ${MOC_SRCS} ${UI_RESOURCES})
 set_target_properties(QCVImageViewer PROPERTIES
 				RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 qt5_use_modules(QCVImageViewer Widgets OpenGL Multimedia)
 
-if(UNIX)
-    target_link_libraries(QCVImageViewer avformat avcodec avutil)
-endif(UNIX)
-
+target_link_libraries(QCVImageViewer avformat avcodec avutil)
 target_link_libraries(QCVImageViewer ${OPENGL_LIBRARIES} ${OpenCV_LIBS} ${VTK_LIBRARIES})
 
