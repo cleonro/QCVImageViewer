@@ -7,38 +7,12 @@ message("Configure QCVImageViewer with cmake " ${CMAKE_VERSION} "...")
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-find_package(VTK COMPONENTS
-        ##vtkCommonCore
-
-        ##vtkGUISupportQt
-        vtkGUISupportQtOpenGL
-
-        ##vtkInteractionStyle
-        vtkInteractionImage
-        ##vtkInteractionWidgets
-
-        ##vtkRenderingCore
-        ##vtkRenderingQt
-        ##vtkRenderingOpenGL
-        ##vtkRenderingFreeTypeOpenGL
-        ##vtkRenderingVolume
-
-        ####vtkRenderingVolumeOpenGL2
-
-        vtkIOGeometry
-        ##vtkIOLegacy
-        ##vtkIOMINC
-
-        ####vtkIOXML
-
-        ##vtkFiltersModeling
-        ##vtkParallelCore
-        ##vtkFiltersParallel
-
-        ##vtkImagingMath
-        ##vtkImagingMorphological
-        ##vtkImagingColor
-        ##vtkImagingStatistics
+find_package(VTK COMPONENTS        
+        GUISupportQt
+        RenderingQt
+        InteractionImage
+        IOGeometry
+        InteractionStyle
 REQUIRED)
 include(${VTK_USE_FILE})
 include_directories(${VTK_INCLUDE_DIRS})

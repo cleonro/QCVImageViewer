@@ -16,6 +16,7 @@ void ViewportSourceMovie::open(void *source)
     m_filePath = *static_cast<QString*>(source);
     m_videoCapture.open(m_filePath.toStdString());
     double fps = m_videoCapture.get(cv::CAP_PROP_FPS);
+    fps = fps == 0 ? 24.0 : fps;
     int timeout = static_cast<int>(std::floor(1000.00 / fps));
     m_timer.setInterval(timeout);
     m_timer.start();

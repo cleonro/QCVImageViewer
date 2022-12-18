@@ -22,5 +22,7 @@ FfmpegTest::~FfmpegTest()
 void FfmpegTest::init()
 {
     qDebug() << avformat_license();
-    av_register_all();
+
+    // deprecated
+    //av_register_all();
 }

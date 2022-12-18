@@ -43,7 +43,7 @@ ViewportVTKWidget::ViewportVTKWidget(QWidget *parent)
     : QVTKOpenGLNativeWidget(parent)
 {
     vtkSmartPointer<vtkGenericOpenGLRenderWindow> renWin = vtkSmartPointer<vtkGenericOpenGLRenderWindow>::New();
-    this->SetRenderWindow(renWin);
+    this->setRenderWindow(renWin);
     m_renderer =  vtkSmartPointer<vtkRenderer>::New();
     renWin->AddRenderer(m_renderer);
     m_renderer->SetBackground(0.3, 0.3, 0.7);
@@ -65,7 +65,7 @@ void ViewportVTKWidget::addImage(const cv::Mat &cvImage)
 
     //m_renderer->ResetCamera();
     resizeImage(this->width(), this->height());
-    this->GetRenderWindow()->Render();
+    this->renderWindow()->Render();
 }
 
 void ViewportVTKWidget::init()
@@ -81,7 +81,7 @@ void ViewportVTKWidget::init()
     //m_renderer->ResetCamera();
 
     m_interactorStyle = vtkSmartPointer<vtkInteractorStyleImage>::New();
-    this->GetRenderWindow()->GetInteractor()->SetInteractorStyle(m_interactorStyle);
+    this->renderWindow()->GetInteractor()->SetInteractorStyle(m_interactorStyle);
 
 }
 
