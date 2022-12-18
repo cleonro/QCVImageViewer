@@ -6,6 +6,8 @@
 #include <QVector>
 #include <QObject>
 
+#include <memory>
+
 class ViewportBase;
 class ViewportSourceBase;
 class FilterBase;
@@ -59,9 +61,12 @@ private slots:
 
 private:
     QWidget *m_parent;
-    ViewportBase *m_viewport;
-    ViewportSourceBase *m_viewportSource;
-    QVector<FilterBase*> m_filters;
+    std::unique_ptr<ViewportBase> m_viewport;
+    std::unique_ptr<ViewportSourceBase> m_viewportSource;
+
+    // Remark: QVector<std::unique_ptr<FilterBase>> can't use "resize".
+    std::vector<std::unique_ptr<FilterBase>> m_filters;
+
     double m_brigtnessContrast[2];
 };
 

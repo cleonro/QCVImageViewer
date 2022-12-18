@@ -4,6 +4,8 @@
 #include <QMainWindow>
 #include <QList>
 
+#include <memory>
+
 #define USE_VTK 1
 
 namespace Ui {
@@ -35,13 +37,13 @@ private:
 
 private:
     Ui::MainWindow2 *ui;
-    ViewportController *m_controller;
+    std::unique_ptr<ViewportController> m_controller;
 
     QFileDialog     *m_fileDialog;
     QList<QString> m_imageExtensions;
     QList<QString> m_movieExtensions;
 
-    FfmpegTest *m_ffmpeg;
+    std::unique_ptr<FfmpegTest> m_ffmpeg;
 };
 
 #endif // MAIN_WINDOW2_H

@@ -20,7 +20,7 @@ MainWindow2::MainWindow2(QWidget *parent) :
     b = connect(ui->actionOpen, &QAction::triggered, this, &MainWindow2::onOpenActionTriggered);
     Q_ASSERT(b);
 
-    m_controller = new ViewportController(this);
+    m_controller.reset(new ViewportController(this));
 #if USE_VTK
     this->setCentralWidget(m_controller->initViewport(ViewportController::VTK));
 #else
@@ -39,7 +39,7 @@ MainWindow2::MainWindow2(QWidget *parent) :
     m_fileDialog->setWindowTitle(tr("Open Image File"));
 
     //ffmpeg test
-    m_ffmpeg = new FfmpegTest(this);
+    m_ffmpeg.reset(new FfmpegTest(this));
     m_ffmpeg->init();
 }
 
@@ -75,7 +75,7 @@ void MainWindow2::addControlWidgets()
     ImageControls2* controls = new ImageControls2(this);
     connect(controls, &ImageControls2::cameraOpened, this, &MainWindow2::onCameraOpened);
     connect(this, &MainWindow2::imageFileOpened, controls, &ImageControls2::onImageFileOpened);
-    controls->setController(m_controller);
+    controls->setController(m_controller.get());
     dock->setWidget(controls);
 
     this->addDockWidget(Qt::LeftDockWidgetArea, dock);

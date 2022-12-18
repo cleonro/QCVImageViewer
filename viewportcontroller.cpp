@@ -10,12 +10,12 @@
 
 ViewportController::ViewportController(QWidget *parent)
     : QObject(parent)
-    ,  m_parent(parent)
+    , m_parent(parent)
+    , m_viewport(nullptr)
+    , m_viewportSource(nullptr)
+    , m_brigtnessContrast{0.0, 1.0}
 {
-    m_viewport = nullptr;
-    m_viewportSource = nullptr;
-    m_brigtnessContrast[0] = 0.0;
-    m_brigtnessContrast[1] = 1.0;
+
 }
 
 ViewportController::~ViewportController()
@@ -31,38 +31,30 @@ QWidget *ViewportController::viewport()
 
 QWidget *ViewportController::initViewport(const ViewportController::ViewportType& type)
 {
-    delete m_viewport;
-    foreach(FilterBase *filter, m_filters)
-    {
-        delete filter;
-    }
     m_filters.clear();
 
     //viewport
     switch (type)
     {
         case OPENGL:
-            m_viewport = new  ViewportOpenGL(m_parent);
+            m_viewport.reset(new  ViewportOpenGL(m_parent));
             break;
         case VTK:
-            m_viewport = new ViewportVTK(m_parent);
+            m_viewport.reset(new ViewportVTK(m_parent));
     }
 
     //filters
     m_filters.resize(FILTERS::COUNT);
-    FilterBase *filter = new FilterInfo(this);
-    m_filters[FILTERS::INFO] = filter;
-    filter = new FilterBC(this);
-    m_filters[FILTERS::BRIGHTNESS_CONTRAST] = filter;
-    filter = new FilterFR(this);
-    m_filters[FILTERS::FACE_RECOGNITION] = filter;
+    m_filters[FILTERS::INFO].reset(new FilterInfo(this));
+    m_filters[FILTERS::BRIGHTNESS_CONTRAST].reset(new FilterBC(this));
+    m_filters[FILTERS::FACE_RECOGNITION].reset(new FilterFR(this));
 
 
     for(int i = 0; i < m_filters.size() - 1; ++i)
     {
-        connect(m_filters[i], &FilterBase::imageReady, m_filters[i + 1], &FilterBase::addImage);
+        connect(m_filters[i].get(), &FilterBase::imageReady, m_filters[i + 1].get(), &FilterBase::addImage);
     }
-    connect(m_filters[FILTERS::COUNT - 1], &FilterBase::imageReady, this, &ViewportController::onImageChanged);
+    connect(m_filters[FILTERS::COUNT - 1].get(), &FilterBase::imageReady, this, &ViewportController::onImageChanged);
 
 
     return viewport();
@@ -70,17 +62,15 @@ QWidget *ViewportController::initViewport(const ViewportController::ViewportType
 
 bool ViewportController::openCamera(int cameraIndex)
 {
-    delete m_viewportSource;
-    ViewportSourceCamera *sourceCamera = new ViewportSourceCamera(this);
-    m_viewportSource = sourceCamera;
+    m_viewportSource.reset(new ViewportSourceCamera(this));
 
     if(m_filters.size() == 0)
     {
-        connect(m_viewportSource, &ViewportSourceBase::imageChanged, this, &ViewportController::onImageChanged);
+        connect(m_viewportSource.get(), &ViewportSourceBase::imageChanged, this, &ViewportController::onImageChanged);
     }
     else
     {
-        connect(m_viewportSource, &ViewportSourceBase::imageChanged, m_filters[0], &FilterBase::addImage);
+        connect(m_viewportSource.get(), &ViewportSourceBase::imageChanged, m_filters[0].get(), &FilterBase::addImage);
         //m_filters[FILTERS::INFO]->setData(sourceCamera->source());
     }
 
@@ -91,7 +81,7 @@ bool ViewportController::openCamera(int cameraIndex)
         m_filters[FILTERS::INFO]->setActive(true);
         m_filters[FILTERS::BRIGHTNESS_CONTRAST]->setActive(true);
         m_filters[FILTERS::FACE_RECOGNITION]->setActive(true);
-        m_filters[FILTERS::INFO]->setData(sourceCamera->source());
+        m_filters[FILTERS::INFO]->setData(m_viewportSource->source());
         m_filters[FILTERS::BRIGHTNESS_CONTRAST]->setData(m_brigtnessContrast);
         QVector<bool> state;
         state.resize(COUNT);
@@ -112,7 +102,7 @@ void ViewportController::onImageChanged(const cv::Mat &cvImage)
 
 void ViewportController::closeCamera()
 {
-    if(dynamic_cast<ViewportSourceCamera*>(m_viewportSource) != nullptr)
+    if(dynamic_cast<ViewportSourceCamera*>(m_viewportSource.get()) != nullptr)
     {
 //        delete m_viewportSource;
 //        m_viewportSource = nullptr;
@@ -122,16 +112,15 @@ void ViewportController::closeCamera()
 
 bool ViewportController::openImageFile(QString &fileName)
 {
-    delete m_viewportSource;
-    m_viewportSource = new ViewportSourceFile(this);
+    m_viewportSource.reset(new ViewportSourceFile(this));
 
     if(m_filters.size() == 0)
     {
-        connect(m_viewportSource, &ViewportSourceBase::imageChanged, this, &ViewportController::onImageChanged);
+        connect(m_viewportSource.get(), &ViewportSourceBase::imageChanged, this, &ViewportController::onImageChanged);
     }
     else
     {
-        connect(m_viewportSource, &ViewportSourceBase::imageChanged, m_filters[0], &FilterBase::addImage);
+        connect(m_viewportSource.get(), &ViewportSourceBase::imageChanged, m_filters[0].get(), &FilterBase::addImage);
         m_filters[FILTERS::INFO]->setActive(false);
         m_filters[FILTERS::BRIGHTNESS_CONTRAST]->setActive(true);
         m_filters[FILTERS::FACE_RECOGNITION]->setActive(false);
@@ -151,16 +140,15 @@ bool ViewportController::openImageFile(QString &fileName)
 
 bool ViewportController::openMovieFile(QString &fileName)
 {
-    delete m_viewportSource;
-    m_viewportSource = new ViewportSourceMovie(this);
+    m_viewportSource.reset(new ViewportSourceMovie(this));
 
     if(m_filters.size() == 0)
     {
-        connect(m_viewportSource, &ViewportSourceBase::imageChanged, this, &ViewportController::onImageChanged);
+        connect(m_viewportSource.get(), &ViewportSourceBase::imageChanged, this, &ViewportController::onImageChanged);
     }
     else
     {
-        connect(m_viewportSource, &ViewportSourceBase::imageChanged, m_filters[0], &FilterBase::addImage);
+        connect(m_viewportSource.get(), &ViewportSourceBase::imageChanged, m_filters[0].get(), &FilterBase::addImage);
     }
 
     m_viewportSource->open(static_cast<void*>(&fileName));
