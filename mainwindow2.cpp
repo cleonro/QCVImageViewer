@@ -39,7 +39,7 @@ MainWindow2::MainWindow2(QWidget *parent) :
     m_fileDialog->setWindowTitle(tr("Open Image File"));
 
     //ffmpeg test
-    m_ffmpeg.reset(new FfmpegTest(this));
+    m_ffmpeg.reset(new FfmpegTest());
     m_ffmpeg->init();
 }
 
@@ -53,13 +53,16 @@ void MainWindow2::onOpenActionTriggered()
     QString fileName;// = QFileDialog::getOpenFileName(this, tr("Open Image File"), QDir::currentPath(), tr("Images (*.png *.xpm *.jpg)"));
     if(m_fileDialog->exec())
     {
-        fileName = m_fileDialog->selectedFiles().first();
+        auto selectedFiles = m_fileDialog->selectedFiles();
+        fileName = selectedFiles.first();
     }
     if(!fileName.isEmpty())
     {
         QString extension = QFileInfo(fileName).completeSuffix();
         bool isImage = m_imageExtensions.contains(extension);
-        bool fileOpened = isImage ? m_controller->openImageFile(fileName) : m_controller->openMovieFile(fileName);
+        bool fileOpened = isImage
+                ? m_controller->openImageFile(fileName)
+                : (m_controller->openMovieFile(fileName) && m_ffmpeg->openStreamFile(fileName));
         if(fileOpened)
         {
             QString windowTitle = QFileInfo(fileName).fileName();
