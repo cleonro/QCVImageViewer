@@ -44,5 +44,33 @@ void FilterInfo::addImage(cv::Mat &image)
 
     cv::putText(image, m_info.toStdString(), cv::Point(30,30),
                 cv::FONT_HERSHEY_COMPLEX_SMALL, 1.0, cv::Scalar(250,200,200));
+
+    computeFPS();
+    cv::putText(image, m_realFpsInfo.toStdString(), cv::Point(30,50),
+                cv::FONT_HERSHEY_COMPLEX_SMALL, 1.0, cv::Scalar(250,200,200));
+
     emit imageReady(image);
+}
+
+void FilterInfo::computeFPS()
+{
+    if(m_framesForFPS == 0)
+    {
+        m_elpasedTimer.start();
+        ++m_framesForFPS;
+        return;
+    }
+
+    if(m_framesForFPS < m_maxFramesForFPS)
+    {
+        ++m_framesForFPS;
+        return;
+    }
+
+    double duration = m_elpasedTimer.elapsed();
+    double fps = (1000.0 * m_maxFramesForFPS) / duration;
+    m_realFpsInfo = QString::number(fps, 'f', 2) + " Real FPS";
+
+    m_framesForFPS = 1;
+    m_elpasedTimer.restart();
 }
