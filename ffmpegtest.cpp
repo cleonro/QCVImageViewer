@@ -195,6 +195,7 @@ void FfmpegTest::readAudioData()
 
         prepareAudioDataForOutput();
 
+        av_frame_unref(pFrame);
         av_packet_unref(pPacket);
     }
 
@@ -228,6 +229,10 @@ int FfmpegTest::prepareAudioDataForOutput()
 
     int q_data_size = byteArray.size();
     writeToAudioOutput(byteArray.data(), q_data_size);
+
+    //m_audioStreamTime = (1.0 * pFrame->pts * pFrame->time_base.num) / pFrame->time_base.den;
+    m_audioStreamTime = (1.0 * pFrame->pts) / pFrame->sample_rate;
+    emit audioStreamTime(m_audioStreamTime);
 
     return response;
 }

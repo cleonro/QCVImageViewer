@@ -53,6 +53,8 @@ public:
 
     void setFilterActive(const int &index, const bool &active);
 
+    void onAudioStreamTime(double time);
+
 signals:
     void filterStateChanged(QVector<bool> state);
 

@@ -189,3 +189,8 @@ void ViewportController::setFilterActive(const int &index, const bool &active)
 {
     m_filters[index]->setActive(active);
 }
+
+void ViewportController::onAudioStreamTime(double time)
+{
+    static_cast<FilterInfo*>(m_filters[FILTERS::INFO].get())->onAudioTime(time);
+}

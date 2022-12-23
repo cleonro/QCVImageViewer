@@ -34,6 +34,7 @@ public:
 
 signals:
     void startReadingAudioData();
+    void audioStreamTime(double);
 
 private slots:
     void onStartReadingAudioData();
@@ -66,6 +67,7 @@ private:
     // audio output
     QScopedPointer<QAudioOutput> m_audioOutput;
     QIODevice *m_audioDevice;
+    double m_audioStreamTime = 0.0;
 };
 
 #endif //FFMPEG_TEST_H

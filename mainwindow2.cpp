@@ -41,6 +41,8 @@ MainWindow2::MainWindow2(QWidget *parent) :
     //ffmpeg test
     m_ffmpeg.reset(new FfmpegTest());
     m_ffmpeg->init();
+    b = connect(m_ffmpeg.get(), &FfmpegTest::audioStreamTime, this, &MainWindow2::onAudioStreamTime);
+    Q_ASSERT(b);
 }
 
 MainWindow2::~MainWindow2()
@@ -91,4 +93,9 @@ void MainWindow2::addControlWidgets()
 void MainWindow2::onCameraOpened(const QString &cameraTitle)
 {
     this->setWindowTitle(cameraTitle);
+}
+
+void MainWindow2::onAudioStreamTime(double time)
+{
+    m_controller->onAudioStreamTime(time);
 }

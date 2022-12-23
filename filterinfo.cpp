@@ -23,15 +23,22 @@ void FilterInfo::setData(void *data)
         return;
     }
 
-    cv::VideoCapture &videoCapture = *static_cast<cv::VideoCapture*>(data);
+    m_data = data;
+    cv::VideoCapture &videoCapture = *static_cast<cv::VideoCapture*>(m_data);
     double width = 0;
     double height = 0;
     double fps = 0;
     width = videoCapture.get(cv::CAP_PROP_FRAME_WIDTH);
     height = videoCapture.get(cv::CAP_PROP_FRAME_HEIGHT);
     fps = videoCapture.get(cv::CAP_PROP_FPS);
-    m_info = QString("[%1, %2] %3FPS").arg(width).arg(height).arg(fps);
+    m_info = QString("[%1, %2] %3 FPS").arg(width).arg(height).arg(fps);
     this->setActive(true);
+}
+
+void FilterInfo::onAudioTime(double time)
+{
+    m_audioStreamTime = time;
+    m_audioStreamTimeInfo = QString::number(m_audioStreamTime, 'f', 3) + " Audio Stream Time";
 }
 
 void FilterInfo::addImage(cv::Mat &image)
@@ -48,29 +55,40 @@ void FilterInfo::addImage(cv::Mat &image)
     computeFPS();
     cv::putText(image, m_realFpsInfo.toStdString(), cv::Point(30,50),
                 cv::FONT_HERSHEY_COMPLEX_SMALL, 1.0, cv::Scalar(250,200,200));
+    cv::putText(image, m_realTimeInfo.toStdString(), cv::Point(30,70),
+                cv::FONT_HERSHEY_COMPLEX_SMALL, 1.0, cv::Scalar(250,200,200));
+    cv::putText(image, m_videoStreamTimeInfo.toStdString(), cv::Point(30,90),
+                cv::FONT_HERSHEY_COMPLEX_SMALL, 1.0, cv::Scalar(250,200,200));
+    cv::putText(image, m_audioStreamTimeInfo.toStdString(), cv::Point(30,110),
+                    cv::FONT_HERSHEY_COMPLEX_SMALL, 1.0, cv::Scalar(250,200,200));
 
     emit imageReady(image);
 }
 
 void FilterInfo::computeFPS()
 {
-    if(m_framesForFPS == 0)
+    if(m_framesCount == 0)
     {
         m_elpasedTimer.start();
-        ++m_framesForFPS;
-        return;
-    }
-
-    if(m_framesForFPS < m_maxFramesForFPS)
-    {
-        ++m_framesForFPS;
+        ++m_framesCount;
         return;
     }
 
     double duration = m_elpasedTimer.elapsed();
-    double fps = (1000.0 * m_maxFramesForFPS) / duration;
-    m_realFpsInfo = QString::number(fps, 'f', 2) + " Real FPS";
+    m_realTimeInfo = QString::number(duration / 1000.0, 'f', 3) + " Real Video Time";
 
-    m_framesForFPS = 1;
-    m_elpasedTimer.restart();
+    cv::VideoCapture &videoCapture = *static_cast<cv::VideoCapture*>(m_data);
+    double videoStreamTime = videoCapture.get(cv::CAP_PROP_POS_MSEC);
+    m_videoStreamTimeInfo = QString::number(videoStreamTime / 1000.0, 'f', 3) + " Video Stream Time";
+
+    if(m_framesCount % m_maxFramesForFPS != 0)
+    {
+        ++m_framesCount;
+        return;
+    }
+
+    double fps = (1000.0 * m_maxFramesForFPS) / (duration - m_fpsLastDuration);
+    m_realFpsInfo = QString::number(fps, 'f', 3) + " Real FPS";
+    m_fpsLastDuration = duration;
+    ++m_framesCount;
 }

@@ -31,6 +31,7 @@ signals:
 private slots:
     void onOpenActionTriggered();
     void onCameraOpened(const QString &cameraTitle);
+    void onAudioStreamTime(double time);
 
 private:
     void addControlWidgets();
