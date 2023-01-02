@@ -3,6 +3,8 @@
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
 
+#include <QDebug>
+
 FilterInfo::FilterInfo(QObject *parent)
     : FilterBase(parent)
 {
@@ -37,8 +39,15 @@ void FilterInfo::setData(void *data)
 
 void FilterInfo::onAudioTime(double time)
 {
+    if(m_audioFramesCount == 0)
+    {
+        qDebug() << "First audio frame info received.";
+    }
+
     m_audioStreamTime = time;
     m_audioStreamTimeInfo = QString::number(m_audioStreamTime, 'f', 3) + " Audio Stream Time";
+
+    ++m_audioFramesCount;
 }
 
 void FilterInfo::addImage(cv::Mat &image)
@@ -69,6 +78,8 @@ void FilterInfo::computeFPS()
 {
     if(m_framesCount == 0)
     {
+        qDebug() << "First video frame received.";
+
         m_elpasedTimer.start();
         ++m_framesCount;
         return;

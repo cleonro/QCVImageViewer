@@ -2,6 +2,7 @@
 
 FilterBase::FilterBase(QObject *parent)
     : QObject(parent)
+    , m_active(false)
 {
 
 }

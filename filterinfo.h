@@ -31,6 +31,7 @@ private:
     QElapsedTimer m_elpasedTimer;
     const unsigned int m_maxFramesForFPS = 10;
     unsigned long int m_framesCount = 0;
+    unsigned long int m_audioFramesCount = 0;
     QString m_realFpsInfo;
     QString m_realTimeInfo;
     QString m_videoStreamTimeInfo;

@@ -231,7 +231,8 @@ int FfmpegTest::prepareAudioDataForOutput()
     writeToAudioOutput(byteArray.data(), q_data_size);
 
     //m_audioStreamTime = (1.0 * pFrame->pts * pFrame->time_base.num) / pFrame->time_base.den;
-    m_audioStreamTime = (1.0 * pFrame->pts) / pFrame->sample_rate;
+    //m_audioStreamTime = (1.0 * pFrame->pts) / pFrame->sample_rate;
+    m_audioStreamTime = (1.0 * pFrame->pts * pCodecContext->time_base.num) / pCodecContext->time_base.den;
     emit audioStreamTime(m_audioStreamTime);
 
     return response;
