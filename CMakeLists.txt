@@ -17,7 +17,7 @@ find_package(VTK COMPONENTS
         IOGeometry
         InteractionStyle
 REQUIRED)
-include(${VTK_USE_FILE})
+
 include_directories(${VTK_INCLUDE_DIRS})
 
 find_package(Qt5Widgets REQUIRED)
@@ -87,23 +87,41 @@ source_group("Forms" FILES ${FRMS})
 source_group("Headers" FILES ${HDRS})
 source_group("MOC" FILES ${MOC_SRCS})
 
-message("Ffmpeg directory: " ${CMAKE_BINARY_DIR}/../../ffmpeg)
-if(UNIX)
+##message("Ffmpeg directory: " ${CMAKE_BINARY_DIR}/../../ffmpeg)
+
+option(USE_CUSTOM_FFMPEG false "Decide if a custom build of ffmpeg is used.")
+set(CUSTOM_FFMPEG_BUILD_DIR "" CACHE PATH "Custom ffmpeg build directory.")
+
+if(${USE_CUSTOM_FFMPEG})
+    include_directories(${CUSTOM_FFMPEG_BUILD_DIR}/include)
+    link_directories(${CUSTOM_FFMPEG_BUILD_DIR}/build)
+elseif(UNIX)
     include_directories(/opt/local/include)
     link_directories(/opt/local/lib)
 
     include_directories(/usr/include/ffmpeg)
-endif(UNIX)
-if(WIN32)
-    include_directories(${CMAKE_BINARY_DIR}/../../ffmpeg/ffmpeg_dev/include)
-    link_directories(${CMAKE_BINARY_DIR}/../../ffmpeg/ffmpeg_dev/lib)
-endif(WIN32)
+endif()
+
+find_library(FFMPEG_AVCODEC_LIBRARY NAMES avcodec libavcodec PATHS ${CUSTOM_FFMPEG_BUILD_DIR}/build)
+message("FFMPEG_AVCODEC_LIBRARY: " ${FFMPEG_AVCODEC_LIBRARY})
+find_library(FFMPEG_AVFORMAT_LIBRARY NAMES avformat libavformat PATHS ${CUSTOM_FFMPEG_BUILD_DIR}/build)
+message("FFMPEG_AVFORMAT_LIBRARY: " ${FFMPEG_AVFORMAT_LIBRARY})
+find_library(FFMPEG_AVUTIL_LIBRARY NAMES avutil libavutil PATHS ${CUSTOM_FFMPEG_BUILD_DIR}/build)
+message("FFMPEG_AVUTIL_LIBRARY: " ${FFMPEG_AVUTIL_LIBRARY})
+set(FFMPEG_LIBS ${FFMPEG_AVCODEC_LIBRARY} ${FFMPEG_AVFORMAT_LIBRARY} ${FFMPEG_AVUTIL_LIBRARY})
+
+## TODO - test Windows build
+##if(WIN32)
+##    include_directories(${CMAKE_BINARY_DIR}/../../ffmpeg/ffmpeg_dev/include)
+##    link_directories(${CMAKE_BINARY_DIR}/../../ffmpeg/ffmpeg_dev/lib)
+##endif(WIN32)
 
 add_executable(QCVImageViewer ${SRCS} ${FRMS_SRCS} ${MOC_SRCS} ${UI_RESOURCES})
 set_target_properties(QCVImageViewer PROPERTIES
 				RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
-qt5_use_modules(QCVImageViewer Widgets OpenGL Multimedia)
 
-target_link_libraries(QCVImageViewer avformat avcodec avutil)
-target_link_libraries(QCVImageViewer ${OPENGL_LIBRARIES} ${OpenCV_LIBS} ${VTK_LIBRARIES})
+set(Qt5Libs Qt5::Widgets Qt5::OpenGL Qt5::Multimedia)
+
+target_link_libraries(QCVImageViewer ${FFMPEG_LIBS})
+target_link_libraries(QCVImageViewer ${Qt5Libs} ${OPENGL_LIBRARIES} ${OpenCV_LIBS} ${VTK_LIBRARIES})
 

@@ -60,7 +60,7 @@ void MainWindow2::onOpenActionTriggered()
     }
     if(!fileName.isEmpty())
     {
-        QString extension = QFileInfo(fileName).completeSuffix();
+        QString extension = QFileInfo(fileName).suffix();
         bool isImage = m_imageExtensions.contains(extension);
         bool fileOpened = isImage
                 ? m_controller->openImageFile(fileName)
