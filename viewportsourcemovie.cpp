@@ -1,5 +1,7 @@
 #include "viewportsourcemovie.h"
 
+#include <QDebug>
+
 ViewportSourceMovie::ViewportSourceMovie(QObject *parent)
     : ViewportSourceBase(parent)
 {
@@ -14,7 +16,12 @@ ViewportSourceMovie::~ViewportSourceMovie()
 void ViewportSourceMovie::open(void *source)
 {
     m_filePath = *static_cast<QString*>(source);
-    m_videoCapture.open(m_filePath.toStdString(), cv::CAP_FFMPEG);
+    bool opened = m_videoCapture.open(m_filePath.toStdString(), cv::CAP_FFMPEG);
+    if(!opened)
+    {
+        qDebug() << "ViewportSourceMovie::open - OpenCV could not open file " << m_filePath << "!";
+        return;
+    }
     double fps = m_videoCapture.get(cv::CAP_PROP_FPS);
     fps = fps == 0 ? 24.0 : fps;
 
